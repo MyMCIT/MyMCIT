@@ -1,0 +1,18 @@
+#root {
+  margin: 0 auto;
+  text-align: center;
+}
+
+body,html {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  position: relative;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
