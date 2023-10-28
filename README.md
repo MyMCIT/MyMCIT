@@ -1,4 +1,4 @@
-# React + TS + Vite Example Project
+# My MCIT Project
 
 ## Configuration 
 - React 
