@@ -38,7 +38,7 @@ const UserTable = ({ userData }: UserTableProps) => {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell align="center">
-                    <img src={user.picture.thumbnail} />
+                    <img src={user.picture.thumbnail} alt={"image"} />
                   </TableCell>
                   <TableCell align="center">{user.name.first}</TableCell>
                   <TableCell align="center">{user.name.last}</TableCell>

@@ -19,7 +19,7 @@ export function Footer() {
       }}
       component={"footer"}
     >
-      <Typography>Created by: Connor Fech</Typography>
+      <Typography>Created by: Connor Fech, Kris Stern, Kevin Risolo</Typography>
     </Paper>
   );
 }
