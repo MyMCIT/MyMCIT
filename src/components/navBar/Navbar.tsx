@@ -104,11 +104,12 @@ export function Navbar({ window }: navBarProps) {
               backgroundColor: "primary.main",
               display: { xs: "none", sm: "flex" },
               cursor: "pointer",
+              minWidth: "fit-content",
             }}
             to={"/"}
           >
             <Typography variant="h6" color="inherit" component="h1">
-              Example Project
+              My MCIT
             </Typography>
           </Box>
 
@@ -116,14 +117,14 @@ export function Navbar({ window }: navBarProps) {
             sx={{
               display: { xs: "none", sm: "flex" },
               marginLeft: "auto",
-              width: "80%",
+              width: "90%",
               justifyContent: "flex-start",
               height: "64px",
               alignItems: "center",
             }}
           >
             <CustomListItemButton to={"/"} primary={"Home"} />
-            <CustomListItemButton to={"/example"} primary={"Example"} />
+            {/*<CustomListItemButton to={"/example"} primary={"Example"} />*/}
             <ThemeToggle />
           </Box>
         </Toolbar>

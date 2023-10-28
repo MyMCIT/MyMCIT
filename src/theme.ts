@@ -14,26 +14,26 @@ export const getDesignTokens = (mode: PaletteMode) => ({
     ...(mode === "light"
       ? {
           primary: {
-            main: "#1976d2",
+            main: "#1d3557",
           },
           secondary: {
-            main: "#9c27b0",
+            main: "#e63946",
           },
           background: {
-            paper: "#fff",
-            default: "#fff",
+            paper: "#f1faee",
+            default: "#f1faee",
           },
         }
       : {
           primary: {
-            main: "#4b5ea6",
+            main: "#2f3e46",
           },
           secondary: {
-            main: "#EA463A",
+            main: "#e63946",
           },
           background: {
-            paper: "#424242",
-            default: "#303030",
+            paper: "#354f52",
+            default: "#354f52",
           },
         }),
   },
