@@ -88,7 +88,11 @@ export function Navbar({ window }: INavBarProps) {
         component="nav"
         sx={{ backgroundColor: "primary.main", backgroundImage: "none" }}
       >
-        <Toolbar>
+        <Toolbar
+          sx={{
+            height: "64px",
+          }}
+        >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -125,7 +129,6 @@ export function Navbar({ window }: INavBarProps) {
               marginLeft: "auto",
               width: "90%",
               justifyContent: "flex-start",
-              height: "64px",
               alignItems: "center",
             }}
           >
