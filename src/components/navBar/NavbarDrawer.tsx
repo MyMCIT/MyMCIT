@@ -1,5 +1,4 @@
-import { Box, IconButton, Link, Typography, useTheme } from "@mui/material";
-import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import { Box, Link, Typography, useTheme } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import { ThemeToggle } from "../themeToggle/ThemeToggle.tsx";
@@ -54,7 +53,7 @@ export const NavbarDrawer = ({ handleDrawerToggle }: INavbarDrawerProps) => {
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Box
         display="flex"
-        justifyContent="center"
+        justifyContent="space-around"
         alignItems="center"
         component={Link}
         sx={{
@@ -62,22 +61,25 @@ export const NavbarDrawer = ({ handleDrawerToggle }: INavbarDrawerProps) => {
           textAlign: "center",
           backgroundColor: "primary.main",
           color: "#fff",
+          height: "64px",
         }}
         href={"/"}
       >
-        <IconButton size="large" edge="start" aria-label="menu">
-          <HowToVoteIcon sx={{ color: "#fff" }} />
-        </IconButton>
         <Typography variant="h6" component="h1">
           My MCIT
         </Typography>
+        <Box
+          sx={{
+            width: "fit-content",
+          }}
+        >
+          <ThemeToggle />
+        </Box>
       </Box>
       <Divider />
       <CustomListDrawerItemButton to={"/"} primary={"Home"} />
       {/*<CustomListDrawerItemButton to={"/example"} primary={"Example"} />*/}
-      <List>
-        <ThemeToggle />
-      </List>
+      <List></List>
     </Box>
   );
 };
