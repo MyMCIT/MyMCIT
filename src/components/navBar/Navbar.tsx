@@ -110,11 +110,12 @@ export function Navbar({ window }: INavBarProps) {
               backgroundColor: "primary.main",
               display: { xs: "none", sm: "flex" },
               cursor: "pointer",
+              minWidth: "fit-content",
             }}
             to={"/"}
           >
             <Typography variant="h6" color="inherit" component="h1">
-              Example Project
+              My MCIT
             </Typography>
           </Box>
 
@@ -122,7 +123,7 @@ export function Navbar({ window }: INavBarProps) {
             sx={{
               display: { xs: "none", sm: "flex" },
               marginLeft: "auto",
-              width: "80%",
+              width: "90%",
               justifyContent: "flex-start",
               height: "64px",
               alignItems: "center",

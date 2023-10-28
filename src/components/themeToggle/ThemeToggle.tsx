@@ -35,7 +35,7 @@ export const ThemeToggle = () => {
         onClick={toggleColorMode}
         color="inherit"
       >
-        {mode == "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+        {mode == "dark" ? <Brightness4Icon /> : <Brightness7Icon />}
       </IconButton>
     </Box>
   );

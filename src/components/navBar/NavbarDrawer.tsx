@@ -69,12 +69,12 @@ export const NavbarDrawer = ({ handleDrawerToggle }: INavbarDrawerProps) => {
           <HowToVoteIcon sx={{ color: "#fff" }} />
         </IconButton>
         <Typography variant="h6" component="h1">
-          Example Project
+          My MCIT
         </Typography>
       </Box>
       <Divider />
       <CustomListDrawerItemButton to={"/"} primary={"Home"} />
-      <CustomListDrawerItemButton to={"/example"} primary={"Example"} />
+      {/*<CustomListDrawerItemButton to={"/example"} primary={"Example"} />*/}
       <List>
         <ThemeToggle />
       </List>
