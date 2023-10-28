@@ -6,8 +6,6 @@ import { useColorMode, useSetColorMode } from "../../context/customHooks.ts";
 
 export const ThemeToggle = () => {
   const mode = useColorMode();
-
-  // TODO - figure out what type this should be
   const setMode: any = useSetColorMode();
 
   useEffect(() => {

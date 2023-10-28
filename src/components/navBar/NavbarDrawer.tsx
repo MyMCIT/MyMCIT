@@ -7,7 +7,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 
-interface navbarDrawerProps {
+interface INavbarDrawerProps {
   handleDrawerToggle: () => void;
 }
 
@@ -48,7 +48,7 @@ const CustomListDrawerItemButton = ({ to, primary }: any) => {
 };
 
 // Only visible on small screens
-export const NavbarDrawer = ({ handleDrawerToggle }: navbarDrawerProps) => {
+export const NavbarDrawer = ({ handleDrawerToggle }: INavbarDrawerProps) => {
   return (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Box

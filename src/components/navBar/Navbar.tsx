@@ -1,24 +1,30 @@
-import { useTheme } from "@mui/material";
+import {
+  useTheme,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Box,
+} from "@mui/material";
 import { ThemeToggle } from "../themeToggle/ThemeToggle.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
 import * as React from "react";
 import Drawer from "@mui/material/Drawer";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import { AppBar, Toolbar, Typography, IconButton, Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { NavbarDrawer } from "./NavbarDrawer.tsx";
 
 import { NavLink, useLocation } from "react-router-dom";
 
-interface navBarProps {
+interface INavBarProps {
   /**
    * Injected by the documentation to work in an iframe.
    * You won't need it on your project.
    */
   window?: () => Window;
 }
-export function Navbar({ window }: navBarProps) {
+export function Navbar({ window }: INavBarProps) {
   const drawerWidth = 240;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const handleDrawerToggle = () => {
@@ -124,7 +130,6 @@ export function Navbar({ window }: navBarProps) {
             }}
           >
             <CustomListItemButton to={"/"} primary={"Home"} />
-            {/*<CustomListItemButton to={"/example"} primary={"Example"} />*/}
             <ThemeToggle />
           </Box>
         </Toolbar>

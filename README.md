@@ -42,7 +42,7 @@ VITE_CIVICS_API_KEY=[Your API key goes here]
 
 - env must be prepended with VITE, or it will not be picked up.
 
-3. Use it in the application
+4. Use it in the application
 
 
 ## Features ##
