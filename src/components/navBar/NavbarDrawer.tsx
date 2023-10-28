@@ -1,5 +1,4 @@
-import { Box, IconButton, Link, Typography, useTheme } from "@mui/material";
-import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import { Box, Link, Typography, useTheme } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import { ThemeToggle } from "../themeToggle/ThemeToggle.tsx";
