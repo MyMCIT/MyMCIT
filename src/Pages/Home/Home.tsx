@@ -1,6 +1,22 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
+import {
+  firebaseDeleteAll,
+  firebaseDeleteByID,
+  fireBaseGetOnce,
+  firebaseReadRealTime,
+  firebaseSet,
+  firebaseUpdate,
+} from "../../utils/firebase.ts";
+import { useEffect } from "react";
+import Divider from "@mui/material/Divider";
 
 export function Home() {
+  useEffect(() => {
+    console.log("mounted home");
+    // TODO - for some reason this is being called alot, maybe just want to use getOnce
+    firebaseReadRealTime();
+  }, []);
+
   return (
     <Box
       sx={{
@@ -23,7 +39,39 @@ export function Home() {
           textAlign: "left",
         }}
       >
-          <Typography>This is an example project</Typography>
+        <Typography>This is an example project</Typography>
+        <Button
+          onClick={() => {
+            fireBaseGetOnce("courses");
+          }}
+        >
+          fetch real courses
+        </Button>
+        <Divider />
+
+        <Button onClick={firebaseSet}>create</Button>
+        <Button
+          onClick={() => {
+            fireBaseGetOnce("test/courses");
+          }}
+        >
+          fetch
+        </Button>
+        <Button
+          onClick={() => {
+            firebaseUpdate(1);
+          }}
+        >
+          update
+        </Button>
+        <Button
+          onClick={() => {
+            firebaseDeleteByID(0);
+          }}
+        >
+          deleteById
+        </Button>
+        <Button onClick={firebaseDeleteAll}>deleteAll</Button>
       </Box>
     </Box>
   );

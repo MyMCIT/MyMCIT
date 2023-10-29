@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import { Box } from "@mui/material";
 import { GlobalContextWrapper } from "./context/GlobalContextWrapper.tsx";
 import { Footer } from "./components/footer/Footer.tsx";
-import {Example} from "./Pages/Example/Example.tsx";
+import { Example } from "./Pages/Example/Example.tsx";
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
         <Box sx={{ padding: "20px" }}>
           <Routes>
             <Route path="/" element={<Home />} />
-              <Route path="/example" element={<Example />} />
+            <Route path="/example" element={<Example />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Box>
