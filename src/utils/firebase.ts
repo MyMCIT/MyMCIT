@@ -49,7 +49,7 @@ export const fireBaseGetOnce = (path: string) => {
   get(child(ref(database), path))
     .then((snapshot) => {
       if (snapshot.exists()) {
-        let data = snapshot.val();
+        const data = snapshot.val();
         console.log(data);
       } else {
         console.log("Data not available");
@@ -63,7 +63,7 @@ export const fireBaseGetOnce = (path: string) => {
 export const firebaseReadRealTime = () => {
   onValue(ref(database, "test/courses"), (snapshot) => {
     const data = snapshot.val();
-    if (!!data) {
+    if (!data) {
       console.log("real time");
       console.log(data);
     } else {
@@ -103,7 +103,7 @@ export const firebaseUpdate = (id: number) => {
 export const firebaseDeleteByID = (id: number) => {
   // TODO - will have to make this dynamic, just an example
 
-  let delete_string = `test/courses/${id}`;
+  const delete_string = `test/courses/${id}`;
   remove(ref(database, delete_string))
     .then(() => {
       console.log("success");
@@ -114,7 +114,7 @@ export const firebaseDeleteByID = (id: number) => {
 };
 
 export const firebaseDeleteAll = () => {
-  let delete_string = `test/courses/`;
+  const delete_string = `test/courses/`;
   remove(ref(database, delete_string))
     .then(() => {
       console.log("success");
