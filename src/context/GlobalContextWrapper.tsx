@@ -8,9 +8,5 @@ export interface GlobalContextProps {
 
 // Normal react component
 export const GlobalContextWrapper = ({ children }: GlobalContextProps) => {
-  return (
-    <ThemeContextWrapper>
-          {children}
-    </ThemeContextWrapper>
-  );
+  return <ThemeContextWrapper>{children}</ThemeContextWrapper>;
 };
