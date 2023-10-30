@@ -1,5 +1,43 @@
 # My MCIT Project
 
+
+## Running the app
+
+- pull the repository
+- run `npm install`
+- create a .env file and add the following variables for your firebase project. These can be found under your application configuration in the firebase console.
+```
+VITE_FIREBASE_API_KEY=
+VITE_AUTH_DOMAIN=
+VITE_DATABASE_URL=
+VITE_PROJECT_ID=
+VITE_STORAGE_BUCKET=
+VITE_MESSAGE_SENDER_ID=
+VITE_AP_ID=
+VITE_MEASUREMENT_ID=
+```
+
+### Running the app with real firebase project
+- this project is preconfigured to connect to the firebase project passed in the environment variables
+- run `npm run start`
+
+
+### Running the app with firebase emulator
+ [Emulator Docs](https://firebase.google.com/docs/emulator-suite)
+- this project is configured to run with the emulators real time database
+- after installing the dependencies
+- install firebase cli `npm i -g firesbase`
+- login to your account `firebase login`
+- start the emulator `firebase emulators:start`
+  - can view the emulator console at `http://127.0.0.1:4000/ `
+  - the real time database emulator will start with no data and may have to be seeded.
+- run `npm run dev` to start in development mode
+
+
+
+
+======================================================================================================
+
 ## Configuration 
 - React 
 - Vite 
@@ -22,11 +60,7 @@
 
 
 
-## Running the app
 
-- pull the repository
-- run `npm install`
-- run `npm run start`
 
 ## Working with ENVs in React with Vite
 

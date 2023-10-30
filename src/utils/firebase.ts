@@ -8,6 +8,7 @@ import {
   update,
   remove,
   onValue,
+  connectDatabaseEmulator,
 } from "firebase/database";
 
 const firebaseConfig = {
@@ -31,6 +32,15 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize firebase database and get the reference of firebase database object.
 const database = getDatabase(app);
+
+const db = getDatabase();
+
+// I running npm run dev, the application will try and connect to the local firebase real time database emulator
+// https://firebase.google.com/docs/emulator-suite/install_and_configure
+if (location.hostname === "localhost" && import.meta.env.VITE_MODE === "dev") {
+  // Point to the RTDB emulator running on localhost.
+  connectDatabaseEmulator(db, "127.0.0.1", 9000);
+}
 
 const testCourses = {
   0: {
