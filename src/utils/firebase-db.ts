@@ -24,7 +24,6 @@ const firebaseConfig = {
 
 // useful reatltime db tutorial https://webkul.com/blog/implementation-of-firebase-real-time-database-in-react/
 
-// TODO - must integrate firebase auth into this
 // want to leave gets unprotected and create, update, delete protected? Have to edit firebase config to do this
 
 // Initialize firebase app.
@@ -54,6 +53,8 @@ const testCourses = {
     courseID: "CIT593",
   },
 };
+
+// These helper methods automatically account for authorization
 
 export const fireBaseGetOnce = (path: string) => {
   get(child(ref(database), path))
