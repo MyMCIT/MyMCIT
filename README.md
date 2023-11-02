@@ -28,10 +28,12 @@ VITE_MEASUREMENT_ID=
 - after installing the dependencies
 - install firebase cli `npm i -g firesbase`
 - login to your account `firebase login`
-- start the emulator `firebase emulators:start`
+- start the emulator `./run-firebase-emulator.sh`
   - can view the emulator console at `http://127.0.0.1:4000/ `
   - the real time database emulator will start with no data and may have to be seeded.
+  - once this is seeded 1 time it should save to the firebase-emulator directory
 - run `npm run dev` to start in development mode
+- the development mode does not support google auth and is not required for a user to be authenticated due to the database rules.
 
 
 

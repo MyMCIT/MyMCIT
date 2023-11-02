@@ -6,9 +6,14 @@ import {
   firebaseReadRealTime,
   firebaseSet,
   firebaseUpdate,
-} from "../../utils/firebase.ts";
+} from "../../utils/firebase-db.ts";
 import { useEffect } from "react";
 import Divider from "@mui/material/Divider";
+import {
+  handleSignOut,
+  handleSignIn,
+  dumpSignedInUser,
+} from "../../utils/firebase-auth.ts";
 
 export function Home() {
   useEffect(() => {
@@ -72,6 +77,11 @@ export function Home() {
           deleteById
         </Button>
         <Button onClick={firebaseDeleteAll}>deleteAll</Button>
+
+        <Divider />
+        <Button onClick={handleSignIn}>Sign In</Button>
+        <Button onClick={dumpSignedInUser}>Print User Details</Button>
+        <Button onClick={handleSignOut}>Sign Out</Button>
       </Box>
     </Box>
   );
