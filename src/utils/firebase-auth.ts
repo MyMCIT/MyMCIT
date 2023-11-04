@@ -4,6 +4,7 @@ import {
   GoogleAuthProvider,
   signOut,
 } from "firebase/auth";
+import { UserInfo } from "../Interfaces.ts";
 
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
@@ -13,9 +14,10 @@ export const handleSignIn = () => {
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
+      // @ts-ignore
       const token = credential.accessToken;
       // The signed-in user info.
-      const user = result.user;
+      const user: UserInfo = result.user;
       // IdP data available using getAdditionalUserInfo(result)
       // ...
       console.log(credential);

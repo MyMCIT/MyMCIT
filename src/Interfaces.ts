@@ -18,3 +18,31 @@ export interface UserData {
     thumbnail: string;
   };
 }
+
+export interface Course {
+  courseID: string;
+  courseName: string;
+  reviews: Review[];
+}
+
+export interface Review {
+  Comment: string;
+  "Course Name": string;
+  Difficulty: string;
+  Rating: string;
+  Semester: string;
+  Workload: string;
+}
+
+// Information provided from firebase about the logged in user
+export interface UserInfo {
+  displayName: string | null;
+  email: string | null;
+  phoneNumber: string | null;
+  photoURL: string | null;
+  providerId: string;
+  /**
+   * The user's unique ID.
+   */
+  uid: string;
+}
