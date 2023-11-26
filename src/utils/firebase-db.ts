@@ -4,6 +4,7 @@ import {
   ref,
   set,
   child,
+  push,
   get,
   update,
   remove,
@@ -32,29 +33,44 @@ const app = initializeApp(firebaseConfig);
 // Initialize firebase database and get the reference of firebase database object.
 const database = getDatabase(app);
 
-const db = getDatabase();
-
 // I running npm run dev, the application will try and connect to the local firebase real time database emulator
 // https://firebase.google.com/docs/emulator-suite/install_and_configure
 if (location.hostname === "localhost" && import.meta.env.VITE_MODE === "dev") {
   // Point to the RTDB emulator running on localhost.
-  connectDatabaseEmulator(db, "127.0.0.1", 9000);
+  connectDatabaseEmulator(database, "127.0.0.1", 9000);
 }
 
-const testCourses = {
-  0: {
-    courseID: "CIT591",
-  },
-  1: {
-    courseID: "CIT592",
-  },
-
-  2: {
-    courseID: "CIT593",
-  },
-};
-
 // These helper methods automatically account for authorization
+
+/**
+ * Fetch new course from the db
+ * @param force - force reset the cache in session storage. Do not do this unless we have to
+ */
+export const fetchCourses = (force = false) => {
+  //handle fetching course from session storage cache
+  const courses = sessionStorage.getItem("courses");
+
+  if (courses != null && !force) {
+    console.log(JSON.parse(courses));
+    return JSON.parse(courses);
+  }
+
+  get(child(ref(database), "/courses"))
+    .then((snapshot) => {
+      console.log("api call made");
+
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        console.log(data);
+        sessionStorage.setItem("courses", JSON.stringify(data));
+      } else {
+        console.log("Data not available");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 
 export const fireBaseGetOnce = (path: string) => {
   get(child(ref(database), path))
@@ -83,10 +99,46 @@ export const firebaseReadRealTime = () => {
   });
 };
 
-export const firebaseSet = () => {
-  set(ref(database, "test/courses/"), testCourses)
+/**
+ * Creates a new item at the given path
+ * This will override all the data at the given path
+ */
+export const firebaseSet = (path: string, data: any) => {
+  set(ref(database, path), data)
     .then(() => {
       // Success.
+      console.log("success");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+/**
+ * Will create an item at the given path
+ * @param path - item to be created
+ * @param data - to be added
+ * @param updateCourseCache
+ */
+export const createItem = (
+  path: string,
+  data: any,
+  updateCourseCache = false
+) => {
+  const updates = {};
+
+  const newItemKey = push(child(ref(database), path)).key;
+
+  // @ts-ignore
+  updates[path + newItemKey] = data;
+
+  update(ref(database), updates)
+    .then(() => {
+      // Success
+
+      if (updateCourseCache) {
+        fetchCourses(true);
+      }
       console.log("success");
     })
     .catch((error) => {
