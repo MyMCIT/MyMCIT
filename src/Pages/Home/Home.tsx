@@ -1,5 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
 import {
+  createItem,
+  fetchCourses,
   firebaseDeleteAll,
   firebaseDeleteByID,
   fireBaseGetOnce,
@@ -14,6 +16,7 @@ import {
   handleSignIn,
   dumpSignedInUser,
 } from "../../utils/firebase-auth.ts";
+import { Review } from "../../Interfaces.ts";
 
 export function Home() {
   useEffect(() => {
@@ -21,6 +24,19 @@ export function Home() {
     // TODO - for some reason this is being called alot, maybe just want to use getOnce
     firebaseReadRealTime();
   }, []);
+
+  const testCourses = {
+    0: {
+      courseID: "CIT591",
+    },
+    1: {
+      courseID: "CIT592",
+    },
+
+    2: {
+      courseID: "CIT593",
+    },
+  };
 
   return (
     <Box
@@ -47,20 +63,44 @@ export function Home() {
         <Typography>This is an example project</Typography>
         <Button
           onClick={() => {
-            fireBaseGetOnce("courses");
+            fetchCourses();
           }}
         >
           fetch real courses
         </Button>
+        <Button
+          onClick={() => {
+            createItem(
+              "/courses/cis-515/reviews/",
+              {
+                "Course Name": "testing",
+                Comment: "test comment",
+                Rating: "good",
+                Difficulty: "hard",
+                Semester: "test",
+                Workload: "test",
+              } as Review,
+              true
+            );
+          }}
+        >
+          Add review to 515
+        </Button>
         <Divider />
 
-        <Button onClick={firebaseSet}>create</Button>
+        <Button
+          onClick={() => {
+            firebaseSet("test/courses", testCourses);
+          }}
+        >
+          create
+        </Button>
         <Button
           onClick={() => {
             fireBaseGetOnce("test/courses");
           }}
         >
-          fetch
+          fetch test courses
         </Button>
         <Button
           onClick={() => {
