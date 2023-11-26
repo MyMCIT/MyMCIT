@@ -60,7 +60,7 @@ export function Home() {
           textAlign: "left",
         }}
       >
-        <Typography>This is an example project</Typography>
+        <Typography data-testid={"example-test"}>This is an example project</Typography>
         <Button
           onClick={() => {
             fetchCourses();

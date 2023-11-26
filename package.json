@@ -10,8 +10,11 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "unit:test": "vitest run",
+    "unit:test:coverage": "vitest run --coverage",
+    "e2e": "npx playwright test",
+    "e2e:open": "npx playwright test --ui",
+    "e2e:codegen": "npx playwright codegen http://localhost:4049/"
   },
   "dependencies": {
     "@emotion/react": "^11.11.0",
@@ -31,8 +34,10 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
+    "@types/node": "^20.10.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/rosie": "^0.0.42",
