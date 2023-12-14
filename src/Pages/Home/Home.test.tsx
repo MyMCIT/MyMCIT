@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { Index } from "./index.tsx";
+import { Home } from "../Home";
 import { BrowserRouter } from "react-router-dom";
 
 describe("App", () => {
   it("renders headline", () => {
-    render(<Index />, { wrapper: BrowserRouter });
+    render(<Home />, { wrapper: BrowserRouter });
 
     screen.debug();
 

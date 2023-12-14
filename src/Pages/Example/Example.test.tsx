@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { Index } from "./index.tsx";
+import { Example } from "../Example";
 import { assert, vitest } from "vitest";
 // import axios from 'axios'
 import axios, { AxiosResponse } from "axios";
@@ -13,7 +13,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 describe("Example", () => {
   const { getByText, findByTestId } = screen;
   it("Page Renders", () => {
-    render(<Index />);
+    render(<Example />);
 
     // Assert there is text on the screen
     assert(getByText("Click the button to get some random user data"));
@@ -55,7 +55,7 @@ describe("Example", () => {
     // ================== Configuring axios mocked response =====================
 
     // Render the component
-    render(<Index />);
+    render(<Example />);
 
     // Find the button by test id
     const button = await findByTestId("get-users-button");
