@@ -23,7 +23,7 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
-// useful reatltime db tutorial https://webkul.com/blog/implementation-of-firebase-real-time-database-in-react/
+// useful realtime db tutorial https://webkul.com/blog/implementation-of-firebase-real-time-database-in-react/
 
 // want to leave gets unprotected and create, update, delete protected? Have to edit firebase config to do this
 
@@ -33,7 +33,7 @@ const app = initializeApp(firebaseConfig);
 // Initialize firebase database and get the reference of firebase database object.
 const database = getDatabase(app);
 
-// I running npm run dev, the application will try and connect to the local firebase real time database emulator
+// if running npm run dev, the application will try and connect to the local firebase real time database emulator
 // https://firebase.google.com/docs/emulator-suite/install_and_configure
 if (location.hostname === "localhost" && import.meta.env.VITE_MODE === "dev") {
   // Point to the RTDB emulator running on localhost.
