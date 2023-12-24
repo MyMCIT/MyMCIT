@@ -1,22 +1,12 @@
 import { initializeApp } from "firebase/app";
 import {
   child,
-  connectDatabaseEmulator,
+  // connectDatabaseEmulator,
   get,
   getDatabase,
   onValue,
   ref,
 } from "firebase/database";
-// import {
-//   getFirestore,
-//   connectFirestoreEmulator,
-//   query,
-//   collection,
-//   getDocs,
-// } from "firebase/firestore";
-// import { getAuth, connectAuthEmulator } from "firebase/auth";
-// import { getApp } from "firebase/app";
-// import { useSetColorMode } from "../context/customHooks.ts";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -40,17 +30,17 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 // if running npm run dev, the application will try and connect to the local firebase real time database emulator
+// Does not seem to be working
 // https://firebase.google.com/docs/emulator-suite/install_and_configure
-if (location.hostname === "localhost" && import.meta.env.VITE_MODE === "dev") {
-  // Point to the RTDB emulator running on localhost.
-  connectDatabaseEmulator(database, "127.0.0.1", 9000);
-}
+// if (location.hostname === "localhost") {
+//   // Point to the RTDB emulator running on localhost.
+//   connectDatabaseEmulator(database, "127.0.0.1", 9000);
+// }
 
 // These helper methods automatically account for authorization
 
 /**
  * Fetch new course from the db
- * @param force - force reset the cache in session storage. Do not do this unless we have to
  */
 export const fetchCourses = async () => {
   // handle fetching course from session storage cache
@@ -75,21 +65,6 @@ export const fetchCourses = async () => {
     }
   }
 };
-
-// export const fireBaseGetOnce = (path: string) => {
-//   get(child(ref(database), path))
-//     .then((snapshot) => {
-//       if (snapshot.exists()) {
-//         const data = snapshot.val();
-//         console.log(data);
-//       } else {
-//         console.log("Data not available");
-//       }
-//     })
-//     .catch((error) => {
-//       console.error(error);
-//     });
-// };
 
 export const firebaseReadRealTime = () => {
   onValue(ref(database), (snapshot) => {
