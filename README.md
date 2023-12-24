@@ -1,4 +1,4 @@
-# My MCIT Project
+# MyMCIT Project
 
 
 ## Running the app

@@ -1,16 +1,22 @@
 import { initializeApp } from "firebase/app";
 import {
-  getDatabase,
-  ref,
-  set,
   child,
-  push,
-  get,
-  update,
-  remove,
-  onValue,
   connectDatabaseEmulator,
+  get,
+  getDatabase,
+  onValue,
+  ref,
 } from "firebase/database";
+// import {
+//   getFirestore,
+//   connectFirestoreEmulator,
+//   query,
+//   collection,
+//   getDocs,
+// } from "firebase/firestore";
+// import { getAuth, connectAuthEmulator } from "firebase/auth";
+// import { getApp } from "firebase/app";
+// import { useSetColorMode } from "../context/customHooks.ts";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -46,49 +52,47 @@ if (location.hostname === "localhost" && import.meta.env.VITE_MODE === "dev") {
  * Fetch new course from the db
  * @param force - force reset the cache in session storage. Do not do this unless we have to
  */
-export const fetchCourses = (force = false) => {
-  //handle fetching course from session storage cache
-  const courses = sessionStorage.getItem("courses");
+export const fetchCourses = async () => {
+  // handle fetching course from session storage cache
+  let reviews = JSON.parse(sessionStorage.getItem("courses") ?? "");
 
-  if (courses != null && !force) {
-    console.log(JSON.parse(courses));
-    return JSON.parse(courses);
+  if (reviews != null) {
+    return reviews;
+  } else {
+    try {
+      let snapshot = await get(child(ref(database), "/courses"));
+      console.log("Fetching course reviews");
+
+      if (snapshot.exists()) {
+        sessionStorage.setItem("courses", JSON.stringify(snapshot.val()));
+        return snapshot.val();
+      } else {
+        console.log("Data not available");
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
-
-  get(child(ref(database), "/courses"))
-    .then((snapshot) => {
-      console.log("api call made");
-
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        console.log(data);
-        sessionStorage.setItem("courses", JSON.stringify(data));
-      } else {
-        console.log("Data not available");
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
 };
 
-export const fireBaseGetOnce = (path: string) => {
-  get(child(ref(database), path))
-    .then((snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        console.log(data);
-      } else {
-        console.log("Data not available");
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-};
+// export const fireBaseGetOnce = (path: string) => {
+//   get(child(ref(database), path))
+//     .then((snapshot) => {
+//       if (snapshot.exists()) {
+//         const data = snapshot.val();
+//         console.log(data);
+//       } else {
+//         console.log("Data not available");
+//       }
+//     })
+//     .catch((error) => {
+//       console.error(error);
+//     });
+// };
 
 export const firebaseReadRealTime = () => {
-  onValue(ref(database, "test/courses"), (snapshot) => {
+  onValue(ref(database), (snapshot) => {
     const data = snapshot.val();
     if (!data) {
       console.log("real time");
@@ -96,6 +100,7 @@ export const firebaseReadRealTime = () => {
     } else {
       console.log("Data not found");
     }
+    return data;
   });
 };
 
@@ -103,16 +108,16 @@ export const firebaseReadRealTime = () => {
  * Creates a new item at the given path
  * This will override all the data at the given path
  */
-export const firebaseSet = (path: string, data: any) => {
-  set(ref(database, path), data)
-    .then(() => {
-      // Success.
-      console.log("success");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
+// export const firebaseSet = (path: string, data: any) => {
+//   set(ref(database, path), data)
+//     .then(() => {
+//       // Success.
+//       console.log("success");
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// };
 
 /**
  * Will create an item at the given path
@@ -120,69 +125,69 @@ export const firebaseSet = (path: string, data: any) => {
  * @param data - to be added
  * @param updateCourseCache
  */
-export const createItem = (
-  path: string,
-  data: any,
-  updateCourseCache = false
-) => {
-  const updates = {};
+// export const createItem = (
+//   path: string,
+//   data: any,
+//   updateCourseCache = false
+// ) => {
+//   const updates = {};
+//
+//   const newItemKey = push(child(ref(database), path)).key;
+//
+//   // @ts-ignore
+//   updates[path + newItemKey] = data;
+//
+//   update(ref(database), updates)
+//     .then(() => {
+//       // Success
+//
+//       if (updateCourseCache) {
+//         fetchCourses(true);
+//       }
+//       console.log("success");
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// };
 
-  const newItemKey = push(child(ref(database), path)).key;
+// export const firebaseUpdate = (id: number) => {
+//   const updates = {};
+//
+//   // TODO - not sure if this is the right syntax
+//   // @ts-ignore
+//   updates["/test/courses/" + id] = { courseID: "CIT594", time: 10.25 };
+//
+//   update(ref(database), updates)
+//     .then(() => {
+//       // Success
+//       console.log("success");
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// };
 
-  // @ts-ignore
-  updates[path + newItemKey] = data;
+// export const firebaseDeleteByID = (id: number) => {
+//   // TODO - will have to make this dynamic, just an example
+//
+//   const delete_string = `test/courses/${id}`;
+//   remove(ref(database, delete_string))
+//     .then(() => {
+//       console.log("success");
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// };
 
-  update(ref(database), updates)
-    .then(() => {
-      // Success
-
-      if (updateCourseCache) {
-        fetchCourses(true);
-      }
-      console.log("success");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
-export const firebaseUpdate = (id: number) => {
-  const updates = {};
-
-  // TODO - not sure if this is the right syntax
-  // @ts-ignore
-  updates["/test/courses/" + id] = { courseID: "CIT594", time: 10.25 };
-
-  update(ref(database), updates)
-    .then(() => {
-      // Success
-      console.log("success");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
-export const firebaseDeleteByID = (id: number) => {
-  // TODO - will have to make this dynamic, just an example
-
-  const delete_string = `test/courses/${id}`;
-  remove(ref(database, delete_string))
-    .then(() => {
-      console.log("success");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
-export const firebaseDeleteAll = () => {
-  const delete_string = `test/courses/`;
-  remove(ref(database, delete_string))
-    .then(() => {
-      console.log("success");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
+// export const firebaseDeleteAll = () => {
+//   const delete_string = `test/courses/`;
+//   remove(ref(database, delete_string))
+//     .then(() => {
+//       console.log("success");
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// };

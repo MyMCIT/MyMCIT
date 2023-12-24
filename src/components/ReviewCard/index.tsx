@@ -1,19 +1,36 @@
-import { useTheme, Box } from "@mui/material";
+import { Stack } from "@mui/material";
+import RateReviewIcon from "@mui/icons-material/RateReview";
 
-export function CourseCard() {
-  const theme = useTheme();
+interface ReviewCardProps {
+  course: {
+    courseName: string;
+    date: string;
+    comment: string;
+  };
+}
+
+export function ReviewCard({ course }: ReviewCardProps) {
+  // const theme = useTheme();
 
   return (
-    <Box
+    <Stack
+      padding={5}
+      width="100%"
+      maxWidth={950}
+      height="fit-content"
+      borderRadius="8px"
+      marginTop={3}
+      marginBottom={3}
       sx={{
-        backgroundColor: "primary.main",
-        padding: "1rem",
-        textAlign: "left",
-        width: "100%",
-        color: theme.palette.primary.contrastText,
-        height: "fit-content",
-        borderRadius: "0px",
+        backgroundColor: "#FFFFFF",
+        color: "primary.main",
+        boxShadow: "2.5px 2.5px 5px 2.5px #D3D3D3",
       }}
-    ></Box>
+    >
+      <RateReviewIcon />
+      <h3>{course.courseName}</h3>
+      <h4>{course.date}</h4>
+      <p>{course.comment}</p>
+    </Stack>
   );
 }
