@@ -56,7 +56,7 @@ export const fetchCourses = async () => {
   // handle fetching course from session storage cache
   const reviews = sessionStorage.getItem("courses") ?? "";
 
-  if (reviews != null) {
+  if (reviews) {
     return JSON.parse(reviews);
   } else {
     try {
