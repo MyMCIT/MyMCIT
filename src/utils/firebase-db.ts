@@ -54,13 +54,13 @@ if (location.hostname === "localhost" && import.meta.env.VITE_MODE === "dev") {
  */
 export const fetchCourses = async () => {
   // handle fetching course from session storage cache
-  let reviews = JSON.parse(sessionStorage.getItem("courses") ?? "");
+  const reviews = sessionStorage.getItem("courses") ?? "";
 
   if (reviews != null) {
-    return reviews;
+    return JSON.parse(reviews);
   } else {
     try {
-      let snapshot = await get(child(ref(database), "/courses"));
+      const snapshot = await get(child(ref(database), "/courses"));
       console.log("Fetching course reviews");
 
       if (snapshot.exists()) {
