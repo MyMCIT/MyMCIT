@@ -1,4 +1,4 @@
-# My MCIT Project
+# MyMCIT Project
 
 
 ## Running the app
@@ -26,7 +26,7 @@ VITE_MEASUREMENT_ID=
  [Emulator Docs](https://firebase.google.com/docs/emulator-suite)
 - this project is configured to run with the emulators real time database
 - after installing the dependencies
-- install firebase cli `npm i -g firesbase`
+- install firebase cli `npm i firebase-tools -g`
 - login to your account `firebase login`
 - start the emulator `./run-firebase-emulator.sh`
   - can view the emulator console at `http://127.0.0.1:4000/ `
@@ -34,8 +34,6 @@ VITE_MEASUREMENT_ID=
   - once this is seeded 1 time it should save to the firebase-emulator directory
 - run `npm run dev` to start in development mode
 - the development mode does not support google auth and is not required for a user to be authenticated due to the database rules.
-
-
 
 
 ======================================================================================================
