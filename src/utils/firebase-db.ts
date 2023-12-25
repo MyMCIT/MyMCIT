@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import {
   child,
-  // connectDatabaseEmulator,
+  connectDatabaseEmulator,
   get,
   getDatabase,
   onValue,
@@ -32,10 +32,10 @@ const database = getDatabase(app);
 // if running npm run dev, the application will try and connect to the local firebase real time database emulator
 // Does not seem to be working
 // https://firebase.google.com/docs/emulator-suite/install_and_configure
-// if (location.hostname === "localhost") {
-//   // Point to the RTDB emulator running on localhost.
-//   connectDatabaseEmulator(database, "127.0.0.1", 9000);
-// }
+if (location.hostname === "localhost") {
+  // Point to the RTDB emulator running on localhost.
+  connectDatabaseEmulator(database, "127.0.0.1", 9000);
+}
 
 // These helper methods automatically account for authorization
 

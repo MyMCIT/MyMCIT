@@ -1,22 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Stack } from "@mui/material";
-import {
-  // createItem,
-  fetchCourses,
-  // firebaseDeleteAll,
-  // firebaseDeleteByID,
-  // fireBaseGetOnce,
-  firebaseReadRealTime,
-  // firebaseSet,
-  // firebaseUpdate,
-} from "../../utils/firebase-db.ts";
-// import Divider from "@mui/material/Divider";
-// import {
-//   handleSignOut,
-//   handleSignIn,
-//   dumpSignedInUser,
-// } from "../../utils/firebase-auth.ts";
-// import { Review } from "../../Interfaces.ts";
+import { fetchCourses, firebaseReadRealTime } from "../../utils/firebase-db.ts";
 import { CourseSummary } from "../../components/CourseSummary";
 import { ReviewCard } from "../../components/ReviewCard";
 
