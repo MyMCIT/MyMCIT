@@ -6,12 +6,14 @@ test("Navigate to home page", async ({ page }) => {
     "This is an example project"
   );
   await page.getByRole("link", { name: "My MCIT" }).click();
-  await page.getByRole("button", { name: "fetch real courses" }).click();
-  await page
-    .locator("nav")
-    .filter({ hasText: "My MCITHome" })
-    .getByRole("button")
-    .click();
+});
+
+// Example test to load a review on a page
+test("Navigate to courses page", async ({ page }) => {
+  await page.goto("/course");
+
+  await page.waitForTimeout(3000);
+  expect(await page.getByTestId("review-card-0").isVisible()).toBeTruthy();
 });
 
 // test("get started link", async ({ page }) => {

@@ -13,6 +13,7 @@ export function CourseSummary() {
         color: "primary.main",
         boxShadow: "2.5px 2.5px 5px 2.5px #D3D3D3",
       }}
+      data-testid={"course-summary"}
     >
       <Stack
         width="100%"

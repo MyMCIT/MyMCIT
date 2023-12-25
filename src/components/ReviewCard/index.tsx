@@ -15,9 +15,10 @@ interface ReviewCardProps {
     rating: string;
     workload: string;
   };
+  id: number;
 }
 
-export function ReviewCard({ course }: ReviewCardProps) {
+export function ReviewCard({ course, id }: ReviewCardProps) {
   return (
     <Stack
       padding={5}
@@ -32,6 +33,7 @@ export function ReviewCard({ course }: ReviewCardProps) {
         color: "primary.main",
         boxShadow: "2.5px 2.5px 5px 2.5px #D3D3D3",
       }}
+      data-testid={`review-card-${id}`}
     >
       <Stack direction="row">
         <Stack direction="column" justifyContent="start" alignItems="center">

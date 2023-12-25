@@ -18,7 +18,7 @@ export function Course() {
       <CourseSummary />
       <Box>
         {courses ? (
-          courses.map((course, idx) => <ReviewCard course={course} key={idx} />)
+          courses.map((course, idx) => <ReviewCard course={course} id={idx} key={idx} />)
         ) : (
           <Typography>No Courses Yet</Typography>
         )}
