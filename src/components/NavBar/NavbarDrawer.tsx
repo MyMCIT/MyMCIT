@@ -1,7 +1,7 @@
 import { Box, Link, Typography, useTheme } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
-import { ThemeToggle } from "../themeToggle/ThemeToggle.tsx";
+import { ThemeToggle } from "../ThemeToggle";
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import ListItem from "@mui/material/ListItem";

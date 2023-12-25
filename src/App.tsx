@@ -1,11 +1,12 @@
 import "./App.css";
-import { Home } from "./Pages/Home/Home.tsx";
-import { Navbar } from "./components/navBar/Navbar.tsx";
+import { Home } from "./Pages/Home";
+import { NavBar } from "./components/NavBar";
 import { Route, Routes } from "react-router-dom";
 import { Box } from "@mui/material";
 import { GlobalContextWrapper } from "./context/GlobalContextWrapper.tsx";
-import { Footer } from "./components/footer/Footer.tsx";
-import { Example } from "./Pages/Example/Example.tsx";
+import { Footer } from "./components/Footer";
+import { Example } from "./Pages/Example";
+import { Course } from "./Pages/Course";
 
 function App() {
   return (
@@ -17,12 +18,13 @@ function App() {
         }}
         data-testid={"HERE"}
       >
-        <Navbar />
-        <Box sx={{ padding: "20px" }}>
+        <NavBar />
+        <Box sx={{ padding: "20px", minHeight: "100%" }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/example" element={<Example />} />
             <Route path="*" element={<Home />} />
+            <Route path="/course" element={<Course />} />
           </Routes>
         </Box>
         <Footer />

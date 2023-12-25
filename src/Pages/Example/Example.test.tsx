@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { Example } from "./Example.tsx";
+import { Example } from "../Example";
 import { assert, vitest } from "vitest";
 // import axios from 'axios'
 import axios, { AxiosResponse } from "axios";

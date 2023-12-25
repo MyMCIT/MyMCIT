@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   useTheme,
   AppBar,
@@ -6,14 +7,13 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
-import { ThemeToggle } from "../themeToggle/ThemeToggle.tsx";
+import { ThemeToggle } from "../ThemeToggle";
 import MenuIcon from "@mui/icons-material/Menu";
-import * as React from "react";
 import Drawer from "@mui/material/Drawer";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import { useEffect, useState } from "react";
 import { NavbarDrawer } from "./NavbarDrawer.tsx";
+import PennShield from "/upenn-shield.png";
 
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -24,7 +24,7 @@ interface INavBarProps {
    */
   window?: () => Window;
 }
-export function Navbar({ window }: INavBarProps) {
+export function NavBar({ window }: INavBarProps) {
   const drawerWidth = 240;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const handleDrawerToggle = () => {
@@ -104,8 +104,11 @@ export function Navbar({ window }: INavBarProps) {
           </IconButton>
 
           <Box
+            display="flex"
+            flexDirection="row"
             justifyContent="center"
             alignItems="center"
+            gap={2}
             component={NavLink}
             sx={{
               textDecoration: "none",
@@ -118,8 +121,9 @@ export function Navbar({ window }: INavBarProps) {
             }}
             to={"/"}
           >
+            <img height={35} src={PennShield} alt="UPenn shield" />
             <Typography variant="h6" color="inherit" component="h1">
-              My MCIT
+              MyMCIT
             </Typography>
           </Box>
 
