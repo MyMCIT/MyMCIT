@@ -6,12 +6,15 @@
   "scripts": {
     "start": "vite",
     "dev": "vite --mode dev",
+    "dev:emulator": "./run-dev.sh",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview",
     "unit:test": "vitest run",
     "unit:test:coverage": "vitest run --coverage",
+    "emulators:start": "firebase emulators:start --import firebase-emulator --export-on-exit firebase-emulator",
+    "emulators:stop": "lsof -t -i:9000 -i:4000 -i:9099 | xargs kill -9",
     "e2e": "npx playwright test",
     "e2e:open": "npx playwright test --ui",
     "e2e:codegen": "npx playwright codegen http://localhost:4049/"
