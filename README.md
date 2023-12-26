@@ -28,13 +28,20 @@ VITE_MEASUREMENT_ID=
 - after installing the dependencies
 - install firebase cli `npm i firebase-tools -g`
 - login to your account `firebase login`
-- start the emulator `./run-firebase-emulator.sh`
+- start the emulator `npm run emulators:start`
   - can view the emulator console at `http://127.0.0.1:4000/ `
   - the real time database emulator will start with no data and may have to be seeded.
   - once this is seeded 1 time it should save to the firebase-emulator directory
 - run `npm run dev` to start in development mode
 - the development mode does not support google auth and is not required for a user to be authenticated due to the database rules.
+- Can stop the emulator by typing `cntrl + c` in your terminal or running `npm run emulators:stop`
+- Run the app and the emulator at the same time with `npm run dev:emualtor`
 
+## Running Playwright
+- Must have the dev mode and emulator running
+- Then either run `npm run e2e` to run the tests headless
+  - or `npm run e2e:open` to bring up the UI for the playwright suite
+- All e2e tests must go into the e2e folder and end with .spec.ts
 
 ======================================================================================================
 

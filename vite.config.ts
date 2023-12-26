@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => {
       environment: "jsdom",
       globals: true,
       setupFiles: "./src/test_setup/setup-tests.ts",
+      exclude: ["**/e2e/**", "**/playwright-examples/**", "**/node_modules/**"],
       coverage: {
         reporter: ["text", "json", "html"],
         all: true,
