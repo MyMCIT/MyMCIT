@@ -115,7 +115,12 @@ function UserComponent() {
             },
           }}
         >
-          <MenuItem onClick={() => handleUserNavigation("/reviews/my-reviews")}>
+          <MenuItem
+            onClick={() => {
+              track("My-Reviews-Navbar-Clicked");
+              handleUserNavigation("/reviews/my-reviews");
+            }}
+          >
             My Reviews
           </MenuItem>
           <MenuItem

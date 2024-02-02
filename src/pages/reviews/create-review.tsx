@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import { Course } from "@/models/course";
 import { supabase } from "@/lib/supabase";
 import Head from "next/head";
+import { track } from "@vercel/analytics";
 
 export const getStaticProps: GetStaticProps = async () => {
   let apiUrl;
@@ -77,6 +78,7 @@ export default function CreateReview({ courses }: any) {
 
     // check if there's an active session
     if (!sessionData?.session) {
+      track("Create-Review-Unauthorized-User");
       router.push("/"); // redirect to "/" if no active session
       setIsSubmitting(false);
       return;
@@ -103,8 +105,10 @@ export default function CreateReview({ courses }: any) {
     const data = await response.json();
 
     if (!response.ok) {
+      track("Create-Review-Failed");
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+    track("Create-Review-Success");
 
     setOpenSnackbar(true);
     await router.push("/");

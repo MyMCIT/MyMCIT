@@ -120,6 +120,7 @@ export default function Home({
   ];
 
   const handleRowClick = (param: any) => {
+    track(`${param.row.course_code}-Row-Clicked`);
     router.push(`/courses/${encodeURIComponent(param.row.course_code)}`);
   };
 

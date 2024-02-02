@@ -34,6 +34,7 @@ export default function SpeedDialTooltipOpen() {
 
     // if actionName equals "Contact Us", send an email to MyMCIT project team
     if (actionName === "Contact Us") {
+      track("Contact-Us-Clicked");
       window.location.href = "mailto:lwinm@seas.upenn.edu";
     }
   };
