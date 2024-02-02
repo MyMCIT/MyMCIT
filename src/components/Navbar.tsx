@@ -159,6 +159,7 @@ export default function Navbar({ themeMode, setThemeMode }: any) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   function handleThemeChange() {
+    track("ThemeChange");
     setThemeMode((prev: string) => (prev === "light" ? "dark" : "light"));
   }
 
@@ -180,19 +181,31 @@ export default function Navbar({ themeMode, setThemeMode }: any) {
               width={48}
             />
           </StyledLink>
-          <StyledLink href="/" passHref>
+          <StyledLink
+            href="/"
+            passHref
+            onClick={() => track("MyMCIT-Icon-Click")}
+          >
             <Typography variant="h6" component="div" sx={{ ml: 2 }}>
               MyMCIT
             </Typography>
           </StyledLink>
           <Hidden smDown>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <StyledLink href="/" passHref>
+              <StyledLink
+                href="/"
+                passHref
+                onClick={() => track("Courses-Navbar-Click")}
+              >
                 <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
                   Courses
                 </Typography>
               </StyledLink>
-              <StyledLink href="/reviews" passHref>
+              <StyledLink
+                href="/reviews"
+                passHref
+                onClick={() => track("Reviews-Navbar-Click")}
+              >
                 <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
                   Reviews
                 </Typography>
