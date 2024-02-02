@@ -8,6 +8,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { useMemo, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 // note that since the Navbar makes use of useEffect and useState, I have turned off
 // SSR for it.
@@ -20,16 +21,19 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     [themeMode],
   );
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box>
-        <Navbar themeMode={themeMode} setThemeMode={setThemeMode} />
-        <Component
-          {...pageProps}
-          themeMode={themeMode}
-          setThemeMode={setThemeMode}
-        />
-      </Box>
-    </ThemeProvider>
+    <>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box>
+          <Navbar themeMode={themeMode} setThemeMode={setThemeMode} />
+          <Component
+            {...pageProps}
+            themeMode={themeMode}
+            setThemeMode={setThemeMode}
+          />
+        </Box>
+      </ThemeProvider>
+      <Analytics />
+    </>
   );
 }
