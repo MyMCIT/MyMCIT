@@ -93,3 +93,4 @@ We welcome contributions! Please read the `CONTRIBUTING.md` file for guidelines 
 Thank you for joining the MyMCIT project. Let's build something amazing.
 
 # MyMCIT-NextJS
+# MyMCIT-NextJS
