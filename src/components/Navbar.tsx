@@ -24,6 +24,7 @@ import Link from "next/link";
 import { styled } from "@mui/system";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/router";
+import { track } from "@vercel/analytics";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -117,7 +118,14 @@ function UserComponent() {
           <MenuItem onClick={() => handleUserNavigation("/reviews/my-reviews")}>
             My Reviews
           </MenuItem>
-          <MenuItem onClick={() => supabase.auth.signOut()}>Logout</MenuItem>
+          <MenuItem
+            onClick={() => {
+              track("Logout");
+              supabase.auth.signOut();
+            }}
+          >
+            Logout
+          </MenuItem>
         </Menu>
       </div>
     );
@@ -126,6 +134,7 @@ function UserComponent() {
   return (
     <Button
       onClick={() => {
+        track("LoginClick");
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_API_URL
