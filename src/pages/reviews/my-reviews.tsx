@@ -9,6 +9,7 @@ import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import ReviewCard from "@/components/ReviewCard";
+import SpeedDialTooltipOpen from "@/components/SpeedDial";
 
 export default function MyReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -53,6 +54,7 @@ export default function MyReviews() {
       {reviews.map((review, index) => (
         <ReviewCard key={index} review={review} course={review.course} />
       ))}
+      <SpeedDialTooltipOpen />
     </>
   );
 }

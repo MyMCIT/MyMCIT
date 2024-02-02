@@ -15,6 +15,7 @@ import SpeedDialTooltipOpen from "@/components/SpeedDial";
 import { useState } from "react";
 import Head from "next/head";
 import { CourseReviewSummary } from "@/models/course-review-summary";
+import { track } from "@vercel/analytics";
 
 export const getStaticProps: GetStaticProps<{
   courseSummaries: CourseReviewSummary[];
@@ -158,12 +159,13 @@ export default function Home({
                         },
                       }}
                       checked={filters.coreCourses}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        track("Core-Courses-Switch");
                         setFilters({
                           ...filters,
                           coreCourses: event.target.checked,
-                        })
-                      }
+                        });
+                      }}
                     />
                   }
                   label="Core Courses"
@@ -181,12 +183,13 @@ export default function Home({
                         },
                       }}
                       checked={filters.electives}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        track("Electives-Switch");
                         setFilters({
                           ...filters,
                           electives: event.target.checked,
-                        })
-                      }
+                        });
+                      }}
                     />
                   }
                   label="Electives"
@@ -204,12 +207,13 @@ export default function Home({
                         },
                       }}
                       checked={filters.noReviews}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        track("No-Reviews-Switch");
                         setFilters({
                           ...filters,
                           noReviews: event.target.checked,
-                        })
-                      }
+                        });
+                      }}
                     />
                   }
                   label="Only No Reviews"

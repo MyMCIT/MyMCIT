@@ -5,6 +5,7 @@ import ReviewCard from "@/components/ReviewCard";
 import { supabase } from "@/lib/supabase";
 import { Review } from "@/models/review";
 import { Course } from "@/models/course";
+import SpeedDialTooltipOpen from "@/components/SpeedDial";
 
 // fetch reviews and courses at build time
 export const getStaticProps = async () => {
@@ -65,6 +66,7 @@ export default function ReviewsPage({
       ) : (
         <Typography align="center">No reviews available.</Typography>
       )}
+      <SpeedDialTooltipOpen />
     </>
   );
 }

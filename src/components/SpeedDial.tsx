@@ -8,6 +8,7 @@ import { AuthSession, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { Create } from "@mui/icons-material";
 import { useRouter } from "next/router";
+import { track } from "@vercel/analytics";
 
 const actions = [{ icon: <MailIcon />, name: "Contact Us" }];
 
@@ -27,7 +28,13 @@ export default function SpeedDialTooltipOpen() {
     handleClose();
 
     if (actionName === "Create Review") {
+      track("Create-Review-Clicked");
       router.push("/reviews/create-review");
+    }
+
+    // if actionName equals "Contact Us", send an email to MyMCIT project team
+    if (actionName === "Contact Us") {
+      window.location.href = "mailto:lwinm@seas.upenn.edu";
     }
   };
 
@@ -62,7 +69,10 @@ export default function SpeedDialTooltipOpen() {
         icon={<SpeedDialIcon />}
         hidden={hidden}
         onClose={handleClose}
-        onOpen={handleOpen}
+        onOpen={() => {
+          track("Speed-Dial-Open", { action: "handleOpen" });
+          handleOpen();
+        }}
         open={open}
         direction="up"
         sx={{
@@ -93,7 +103,7 @@ export default function SpeedDialTooltipOpen() {
                 key={action.name}
                 icon={action.icon}
                 tooltipTitle={action.name}
-                onClick={handleClose}
+                onClick={() => handleAction(action.name)}
               />
             ))}
       </SpeedDial>
