@@ -1,4 +1,5 @@
-import { SyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import {
   Alert,
   Box,
@@ -14,11 +15,11 @@ import {
   Typography,
 } from "@mui/material";
 import { getSemesters } from "@/lib/semesters";
-import { GetStaticProps } from "next";
-import { useRouter } from "next/router";
-import { Course } from "@/models/course";
 import { supabase } from "@/lib/supabase";
 import Head from "next/head";
+import { GetStaticProps } from "next";
+import { Course } from "@/models/course";
+import { Review } from "@/models/review";
 import { track } from "@vercel/analytics";
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -46,31 +47,41 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-export default function CreateReview({ courses }: any) {
+export default function EditReview({ courses }: any) {
   const router = useRouter();
+  const { id } = router.query;
   const [courseName, setCourseName] = useState<string>("");
   const [course, setCourse] = useState<Course>();
+  const [courseId, setCourseId] = useState("");
   const [semester, setSemester] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [workload, setWorkload] = useState<string>("");
   const [rating, setRating] = useState("");
-  const [review, setReview] = useState("");
+  const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [openAuthSnackbar, setOpenAuthSnackbar] = useState(false);
+  const [error, setError] = useState("");
 
+  // pre-fill the form with the review data fetched from API
   useEffect(() => {
-    (async () => {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session.session?.user) {
-        setOpenAuthSnackbar(true);
-        router.push("/");
-      }
-    })();
-  }, [router]);
+    if (id) {
+      fetch(`/api/get-review?id=${id}`)
+        .then((res) => res.json())
+        .then((data: Review) => {
+          setCourse(data.course);
+          setCourseId(data.course.id.toString());
+          setCourseName(data.course.course_name);
+          setSemester(data.semester);
+          setDifficulty(data.difficulty);
+          setWorkload(data.workload.replace(" hrs/wk", ""));
+          setRating(data.rating);
+          setComment(data.comment);
+        })
+        .catch((error) => setError("Failed to fetch review"));
+    }
+  }, [id]);
 
-  // submits review
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -84,47 +95,37 @@ export default function CreateReview({ courses }: any) {
       return;
     }
 
-    const response = await fetch("/api/create-review", {
-      method: "POST",
+    const response = await fetch("/api/update-review", {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionData.session?.access_token}`,
       },
       body: JSON.stringify({
+        id: +id!,
         course_id: course?.id,
         course_code: course?.course_code,
         semester: semester,
         difficulty: difficulty,
         workload: workload + " hrs/wk",
         rating: rating,
-        comment: review,
+        comment: comment,
       }),
     });
 
     setIsSubmitting(false);
-    const data = await response.json();
 
-    if (!response.ok) {
-      track("Create-Review-Failed");
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (response.ok) {
+      setOpenSnackbar(true);
+      setTimeout(() => router.push("/reviews/my-reviews"), 2000);
+    } else {
+      setError("Failed to update review");
     }
-    track("Create-Review-Success");
-
-    setOpenSnackbar(true);
-    await router.push("/");
   };
 
-  const handleCloseSnackbar = (
-    event?: SyntheticEvent<Element, Event> | Event,
-    reason?: string,
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
+  if (error) return <div>{error}</div>;
 
-    setOpenSnackbar(false);
-  };
-
+  const semesters = getSemesters();
   const difficultyLevels = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard"];
   const ratings = [
     "Strongly Disliked",
@@ -133,36 +134,23 @@ export default function CreateReview({ courses }: any) {
     "Liked",
     "Strongly Liked",
   ];
-  const semesters = getSemesters();
 
   return (
     <>
-      <div>
-        <Head>
-          <title>Create Review</title>
-        </Head>
-      </div>
+      <Head>
+        <title>Edit Review</title>
+      </Head>
       <Container maxWidth="sm">
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            mt: 2,
-          }}
-        >
-          <Typography variant="h6">Create Review</Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
-            <FormControl fullWidth sx={{ my: 2 }}>
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h4" gutterBottom>
+            Edit Review
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <FormControl fullWidth margin="normal">
               <InputLabel id="course-label">Course</InputLabel>
               <Select
                 labelId="course-label"
-                value={courseName}
+                value={courseId}
                 onChange={(e) => {
                   const selectedCourse: Course = courses.find(
                     (c: { course_code: string | undefined }) =>
@@ -173,8 +161,8 @@ export default function CreateReview({ courses }: any) {
                 }}
                 label="Course"
               >
-                {courses.map((course: any) => (
-                  <MenuItem key={course.id} value={course.course_code}>
+                {courses.map((course: Course) => (
+                  <MenuItem key={course.id} value={course.id}>
                     {course.course_code}: {course.course_name}
                   </MenuItem>
                 ))}
@@ -237,50 +225,28 @@ export default function CreateReview({ courses }: any) {
               <TextField
                 multiline
                 rows={4}
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
                 label="Your Review"
               />
             </FormControl>
             <Button
               type="submit"
-              fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              color="primary"
               disabled={isSubmitting}
+              sx={{ mt: 3, mb: 2 }}
             >
-              {isSubmitting ? <CircularProgress size={24} /> : "Create"}
+              {isSubmitting ? <CircularProgress size={24} /> : "Update Review"}
             </Button>
-          </Box>
+          </form>
         </Box>
         <Snackbar
           open={openSnackbar}
-          autoHideDuration={4000}
-          onClose={handleCloseSnackbar}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            severity="success"
-            onClose={handleCloseSnackbar}
-          >
-            Successfully submitted new review!
-          </Alert>
-        </Snackbar>
-        <Snackbar
-          open={openAuthSnackbar}
-          autoHideDuration={9000}
-          onClose={handleCloseSnackbar}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            severity="error"
-            onClose={handleCloseSnackbar}
-          >
-            You are not authenticated!
-          </Alert>
-        </Snackbar>
+          autoHideDuration={6000}
+          onClose={() => setOpenSnackbar(false)}
+          message="Review updated successfully"
+        />
       </Container>
     </>
   );
