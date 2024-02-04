@@ -17,6 +17,7 @@ import ReviewCard from "@/components/ReviewCard";
 import { Session } from "@supabase/supabase-js";
 import { isCurrentUserReview } from "@/lib/userUtils";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 type CourseReviewSummary = {
   id: number;
@@ -156,6 +157,8 @@ export default function CourseReviews({
   currentUser: Session | null;
 }) {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   if (!reviews.length) {
     return (
       <Typography variant="h6" align="center" mt={5}>
@@ -163,6 +166,35 @@ export default function CourseReviews({
       </Typography>
     );
   }
+
+  const handleDelete = async (reviewId: number, courseCode: string) => {
+    setIsSubmitting(true);
+
+    const { data: sessionData } = await supabase.auth.getSession();
+
+    // confirm deletion with  user
+    if (!confirm("Are you sure you want to delete this review?")) return;
+
+    const response = await fetch(`/api/delete-review`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionData.session?.access_token}`,
+      },
+      body: JSON.stringify({
+        id: reviewId,
+        course_code: courseCode,
+      }),
+    });
+
+    if (!response.ok) {
+      alert("Failed to delete review.");
+      return;
+    }
+
+    setIsSubmitting(false);
+    window.location.reload();
+  };
 
   const summary = courseSummary[0];
 
@@ -205,13 +237,7 @@ export default function CourseReviews({
       </Paper>
 
       {reviews.map((review, index) => (
-        <ReviewCard
-          review={review}
-          key={review.id}
-          course={course}
-          onEdit={() => router.push(`/reviews/edit-review?id=${review.id}`)}
-          showEditDeleteOptions={isCurrentUserReview(review)} // only display edit and delete options if the current user wrote the review
-        />
+        <ReviewCard review={review} key={review.id} course={course} />
       ))}
 
       <SpeedDialTooltipOpen />

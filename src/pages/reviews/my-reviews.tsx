@@ -7,10 +7,14 @@ import { Typography } from "@mui/material";
 import ReviewCard from "@/components/ReviewCard";
 import SpeedDialTooltipOpen from "@/components/SpeedDial";
 import { useRouter } from "next/router";
+import UserReviewCard from "@/components/UserReviewCard";
 
 export default function MyReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [courses, setCourses] = useState<{ [key: string]: Course }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -39,6 +43,36 @@ export default function MyReviews() {
     fetchReviews();
   }, []);
 
+  const handleDelete = async (reviewId: number, courseCode: string) => {
+    setIsSubmitting(true);
+
+    const { data: sessionData } = await supabase.auth.getSession();
+
+    // confirm deletion with  user
+    if (!confirm("Are you sure you want to delete this review?")) return;
+
+    const response = await fetch(`/api/delete-review`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionData.session?.access_token}`,
+      },
+      body: JSON.stringify({
+        id: reviewId,
+        course_code: courseCode,
+      }),
+    });
+
+    if (!response.ok) {
+      alert("Failed to delete review.");
+      return;
+    }
+
+    // if delete was successful, remove review from local state
+    setReviews(reviews.filter((review) => review.id !== reviewId));
+    setIsSubmitting(false);
+  };
+
   return (
     <>
       <Head>
@@ -50,11 +84,12 @@ export default function MyReviews() {
       </Typography>
 
       {reviews.map((review, index) => (
-        <ReviewCard
+        <UserReviewCard
           key={index}
           review={review}
           course={review.course}
           onEdit={() => router.push(`/reviews/edit-review?id=${review.id}`)}
+          onDelete={() => handleDelete(review.id, review.course.course_code)}
         />
       ))}
       <SpeedDialTooltipOpen />
