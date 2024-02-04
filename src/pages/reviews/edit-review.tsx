@@ -20,6 +20,7 @@ import Head from "next/head";
 import { GetStaticProps } from "next";
 import { Course } from "@/models/course";
 import { Review } from "@/models/review";
+import { track } from "@vercel/analytics";
 
 export const getStaticProps: GetStaticProps = async () => {
   let apiUrl;
@@ -51,11 +52,12 @@ export default function EditReview({ courses }: any) {
   const { id } = router.query;
   const [courseName, setCourseName] = useState<string>("");
   const [course, setCourse] = useState<Course>();
+  const [courseId, setCourseId] = useState("");
   const [semester, setSemester] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [workload, setWorkload] = useState<string>("");
   const [rating, setRating] = useState("");
-  const [review, setReview] = useState("");
+  const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [error, setError] = useState("");
@@ -67,12 +69,13 @@ export default function EditReview({ courses }: any) {
         .then((res) => res.json())
         .then((data: Review) => {
           setCourse(data.course);
+          setCourseId(data.course.id.toString());
           setCourseName(data.course.course_name);
           setSemester(data.semester);
           setDifficulty(data.difficulty);
           setWorkload(data.workload.replace(" hrs/wk", ""));
           setRating(data.rating);
-          setReview(data.comment);
+          setComment(data.comment);
         })
         .catch((error) => setError("Failed to fetch review"));
     }
@@ -82,25 +85,44 @@ export default function EditReview({ courses }: any) {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const { data: sessionData } = await supabase.auth.getSession();
+
+    // check if there's an active session
+    if (!sessionData?.session) {
+      track("Create-Review-Unauthorized-User");
+      router.push("/"); // redirect to "/" if no active session
+      setIsSubmitting(false);
+      return;
+    }
+
     const response = await fetch("/api/update-review", {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionData.session?.access_token}`,
       },
-      body: JSON.stringify(review),
+      body: JSON.stringify({
+        id: id,
+        course_id: course?.id,
+        course_code: course?.course_code,
+        semester: semester,
+        difficulty: difficulty,
+        workload: workload + " hrs/wk",
+        rating: rating,
+        comment: comment,
+      }),
     });
 
     setIsSubmitting(false);
 
     if (response.ok) {
       setOpenSnackbar(true);
-      setTimeout(() => router.push("/my-reviews"), 2000);
+      setTimeout(() => router.push("/reviews/my-reviews"), 2000);
     } else {
       setError("Failed to update review");
     }
   };
 
-  if (!review) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   const semesters = getSemesters();
@@ -128,7 +150,7 @@ export default function EditReview({ courses }: any) {
               <InputLabel id="course-label">Course</InputLabel>
               <Select
                 labelId="course-label"
-                value={course?.id}
+                value={courseId}
                 onChange={(e) => {
                   const selectedCourse: Course = courses.find(
                     (c: { course_code: string | undefined }) =>
@@ -203,8 +225,8 @@ export default function EditReview({ courses }: any) {
               <TextField
                 multiline
                 rows={4}
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
                 label="Your Review"
               />
             </FormControl>

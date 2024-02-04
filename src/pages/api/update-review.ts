@@ -13,12 +13,16 @@ export default async function updateReview(
   const {
     id,
     course_id,
+    course_code,
     semester,
     difficulty,
     workload,
     rating,
     comment,
-  }: Review = req.body;
+  } = req.body;
+
+  // console log the req.body
+  console.log("Req body update, ", req.body);
 
   const authHeader = req.headers.authorization;
 
@@ -44,7 +48,7 @@ export default async function updateReview(
       course_id: course_id,
       semester: semester,
       difficulty: difficulty,
-      workload: workload + " hrs/wk",
+      workload: workload,
       rating: rating,
       comment: comment,
     })
@@ -62,7 +66,7 @@ export default async function updateReview(
 
     // trigger on-demand ISR with course_code for revalidation
     const response = await fetch(
-      `${apiUrl}/api/revalidate?secret=${process.env.ON_DEMAND_ISR_TOKEN}&course=${course_id}`,
+      `${apiUrl}/api/revalidate?secret=${process.env.ON_DEMAND_ISR_TOKEN}&course=${course_code}`,
     );
     if (!response.ok) {
       throw new Error("Error revalidating");
