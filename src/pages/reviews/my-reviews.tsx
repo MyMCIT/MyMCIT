@@ -10,6 +10,7 @@ import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import ReviewCard from "@/components/ReviewCard";
 import SpeedDialTooltipOpen from "@/components/SpeedDial";
+import { router } from "next/client";
 
 export default function MyReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -52,7 +53,12 @@ export default function MyReviews() {
       </Typography>
 
       {reviews.map((review, index) => (
-        <ReviewCard key={index} review={review} course={review.course} />
+        <ReviewCard
+          key={index}
+          review={review}
+          course={review.course}
+          onEdit={() => router.push(`/reviews/edit-review?id=${review.id}`)}
+        />
       ))}
       <SpeedDialTooltipOpen />
     </>

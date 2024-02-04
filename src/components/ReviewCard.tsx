@@ -67,7 +67,7 @@ const formatDate = (dateString: string) => {
   return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 };
 
-export default function ReviewCard({ review, course }: any) {
+export default function ReviewCard({ review, course, onEdit }: any) {
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
 
@@ -138,7 +138,14 @@ export default function ReviewCard({ review, course }: any) {
             open={open}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>Edit</MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                onEdit();
+              }}
+            >
+              Edit
+            </MenuItem>
             <MenuItem onClick={handleClose}>Delete</MenuItem>
           </Menu>
         </Box>
