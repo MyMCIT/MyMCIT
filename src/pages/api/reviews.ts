@@ -1,15 +1,6 @@
 import { supabase } from "../../lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-type Review = {
-  created_at: string;
-  semester: string;
-  difficulty: string;
-  rating: string;
-  workload: string;
-  comment: string;
-  course_id: string;
-};
+import { Review } from "@/models/review";
 
 type ErrorMessage = {
   error: string;

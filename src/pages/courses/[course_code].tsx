@@ -14,6 +14,8 @@ import { Course } from "@/models/course";
 import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
+import { Session } from "@supabase/supabase-js";
+import { isCurrentUserReview } from "@/lib/userUtils";
 
 type CourseReviewSummary = {
   id: number;
@@ -148,7 +150,10 @@ export default function CourseReviews({
   course,
   courseSummary,
   reviews,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+  currentUser,
+}: InferGetStaticPropsType<typeof getStaticProps> & {
+  currentUser: Session | null;
+}) {
   if (!reviews.length) {
     return (
       <Typography variant="h6" align="center" mt={5}>
@@ -156,6 +161,8 @@ export default function CourseReviews({
       </Typography>
     );
   }
+
+  console.log("current user: ", currentUser);
 
   const summary = courseSummary[0];
 
@@ -198,7 +205,12 @@ export default function CourseReviews({
       </Paper>
 
       {reviews.map((review, index) => (
-        <ReviewCard review={review} key={review.id} course={course} />
+        <ReviewCard
+          review={review}
+          key={review.id}
+          course={course}
+          showEditDeleteOptions={isCurrentUserReview(review)} // only display edit and delete options if the current user wrote the review
+        />
       ))}
 
       <SpeedDialTooltipOpen />

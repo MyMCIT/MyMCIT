@@ -13,7 +13,8 @@ import { MoreVert, School } from "@mui/icons-material";
 import { OverridableStringUnion } from "@mui/types";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { isCurrentUserReview } from "@/lib/userUtils";
 
 type CourseReviewSummary = {
   id: number;
@@ -67,9 +68,25 @@ const formatDate = (dateString: string) => {
   return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 };
 
-export default function ReviewCard({ review, course, onEdit }: any) {
+export default function ReviewCard({
+  review,
+  course,
+  currentUser,
+  onEdit,
+  onDelete,
+}: any) {
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
+  const [canEditDelete, setCanEditDelete] = useState(false);
+
+  useEffect(() => {
+    const checkPermission = async () => {
+      const hasPermission = await isCurrentUserReview(review);
+      setCanEditDelete(hasPermission);
+    };
+
+    checkPermission();
+  }, [review]);
 
   // state for dropdown menu
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -118,19 +135,23 @@ export default function ReviewCard({ review, course, onEdit }: any) {
               </Typography>
             </Box>
           </Box>
-          <IconButton
-            aria-label="more"
-            aria-controls="long-menu"
-            aria-haspopup="true"
-            onClick={handleClick}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8, // Adjust positioning as needed
-            }}
-          >
-            <MoreVert />
-          </IconButton>
+          {canEditDelete && ( // conditionally render based on user
+            <>
+              <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+                sx={{
+                  position: "absolute",
+                  right: 8,
+                  top: 8,
+                }}
+              >
+                <MoreVert />
+              </IconButton>
+            </>
+          )}
           <Menu
             id="long-menu"
             anchorEl={anchorEl}
@@ -146,7 +167,14 @@ export default function ReviewCard({ review, course, onEdit }: any) {
             >
               Edit
             </MenuItem>
-            <MenuItem onClick={handleClose}>Delete</MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                onDelete();
+              }}
+            >
+              Delete
+            </MenuItem>
           </Menu>
         </Box>
         <Typography variant="body1" color="text.primary" gutterBottom>

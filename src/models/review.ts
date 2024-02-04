@@ -10,4 +10,5 @@ export type Review = {
   rating: string;
   comment: string;
   course: Course;
+  user_id?: string;
 };
