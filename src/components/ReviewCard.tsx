@@ -5,11 +5,15 @@ import {
   Card,
   CardContent,
   ChipPropsColorOverrides,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
-import { School } from "@mui/icons-material";
+import { MoreVert, School } from "@mui/icons-material";
 import { OverridableStringUnion } from "@mui/types";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
+import React, { useState } from "react";
 
 type CourseReviewSummary = {
   id: number;
@@ -67,6 +71,20 @@ export default function ReviewCard({ review, course }: any) {
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
 
+  // state for dropdown menu
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  // handlers for dropdown menu actions (edit, delete)
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget as HTMLElement);
+  };
+
+  // close dropdown menu
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <Card
       sx={{
@@ -75,23 +93,54 @@ export default function ReviewCard({ review, course }: any) {
         my: 2,
         p: 2,
         boxShadow: 3,
+        position: "relative",
       }}
     >
       <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
-          <School sx={{ fontSize: 40, mr: 2 }} />
-          <Box>
-            <Typography
-              variant="body1"
-              component="div"
-              sx={{ fontWeight: "bold" }}
-            >
-              {course.course_code}: {course.course_name}
-            </Typography>
-            <Typography variant="subtitle2" color="textSecondary">
-              {formatDate(review.created_at)}
-            </Typography>
+        <Box
+          display="flex"
+          alignItems="center"
+          mb={2}
+          justifyContent="space-between"
+        >
+          <Box display="flex" alignItems="center">
+            <School sx={{ fontSize: 40, mr: 2 }} />
+            <Box>
+              <Typography
+                variant="body1"
+                component="div"
+                sx={{ fontWeight: "bold" }}
+              >
+                {course.course_code}: {course.course_name}
+              </Typography>
+              <Typography variant="subtitle2" color="textSecondary">
+                {formatDate(review.created_at)}
+              </Typography>
+            </Box>
           </Box>
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8, // Adjust positioning as needed
+            }}
+          >
+            <MoreVert />
+          </IconButton>
+          <Menu
+            id="long-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={open}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={handleClose}>Edit</MenuItem>
+            <MenuItem onClick={handleClose}>Delete</MenuItem>
+          </Menu>
         </Box>
         <Typography variant="body1" color="text.primary" gutterBottom>
           {review.comment}
