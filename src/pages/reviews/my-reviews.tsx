@@ -3,18 +3,15 @@ import { Review } from "@/models/review";
 import { Course } from "@/models/course";
 import { supabase } from "@/lib/supabase";
 import Head from "next/head";
-import { Card, CardContent, Chip, Grid, Typography } from "@mui/material";
-import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
-import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
-import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
+import { Typography } from "@mui/material";
 import ReviewCard from "@/components/ReviewCard";
 import SpeedDialTooltipOpen from "@/components/SpeedDial";
-import { router } from "next/client";
+import { useRouter } from "next/router";
 
 export default function MyReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [courses, setCourses] = useState<{ [key: string]: Course }>({});
+  const router = useRouter();
 
   useEffect(() => {
     const fetchReviews = async () => {

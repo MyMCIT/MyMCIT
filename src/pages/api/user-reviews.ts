@@ -20,10 +20,12 @@ export default async function userReviews(req: any, res: any) {
   }
 
   // fetch reviews and include course details in the same query
+  // sort to be in descending order by created_at
   const { data: reviews, error: reviewsError } = await supabase
     .from("Reviews")
     .select("*, course:course_id (id, course_name, course_code)")
-    .eq("user_id", userData.user?.id);
+    .eq("user_id", userData.user?.id)
+    .order("created_at", { ascending: false });
 
   if (reviewsError) {
     return res.status(500).json({ error: reviewsError.message });

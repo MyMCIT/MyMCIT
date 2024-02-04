@@ -102,7 +102,7 @@ export default function EditReview({ courses }: any) {
         Authorization: `Bearer ${sessionData.session?.access_token}`,
       },
       body: JSON.stringify({
-        id: id,
+        id: +id!,
         course_id: course?.id,
         course_code: course?.course_code,
         semester: semester,

@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { authSupabase } from "@/lib/supabase";
 import { Review } from "@/models/review";
+import { Simulate } from "react-dom/test-utils";
+import select = Simulate.select;
 
 export default async function updateReview(
   req: NextApiRequest,
@@ -20,9 +22,6 @@ export default async function updateReview(
     rating,
     comment,
   } = req.body;
-
-  // console log the req.body
-  console.log("Req body update, ", req.body);
 
   const authHeader = req.headers.authorization;
 
@@ -51,8 +50,12 @@ export default async function updateReview(
       workload: workload,
       rating: rating,
       comment: comment,
+      user_id: userData.user?.id,
     })
-    .match({ id: id }); // match via review id
+    .eq("id", id); // match via review id
+
+  // console log the update
+  console.log("Review updated: ", data);
 
   if (updateError) {
     return res.status(500).json({ error: updateError.message });
