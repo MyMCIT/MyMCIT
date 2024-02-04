@@ -68,13 +68,7 @@ const formatDate = (dateString: string) => {
   return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 };
 
-export default function ReviewCard({
-  review,
-  course,
-  currentUser,
-  onEdit,
-  onDelete,
-}: any) {
+export default function ReviewCard({ review, course, onEdit, onDelete }: any) {
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
   const [canEditDelete, setCanEditDelete] = useState(false);

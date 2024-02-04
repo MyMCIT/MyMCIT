@@ -16,6 +16,7 @@ import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
 import { Session } from "@supabase/supabase-js";
 import { isCurrentUserReview } from "@/lib/userUtils";
+import { useRouter } from "next/router";
 
 type CourseReviewSummary = {
   id: number;
@@ -154,6 +155,7 @@ export default function CourseReviews({
 }: InferGetStaticPropsType<typeof getStaticProps> & {
   currentUser: Session | null;
 }) {
+  const router = useRouter();
   if (!reviews.length) {
     return (
       <Typography variant="h6" align="center" mt={5}>
@@ -207,6 +209,7 @@ export default function CourseReviews({
           review={review}
           key={review.id}
           course={course}
+          onEdit={() => router.push(`/reviews/edit-review?id=${review.id}`)}
           showEditDeleteOptions={isCurrentUserReview(review)} // only display edit and delete options if the current user wrote the review
         />
       ))}
