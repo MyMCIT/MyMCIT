@@ -6,9 +6,10 @@ const getCurrentUserId = async (): Promise<string | null> => {
   const { data: session } = await supabase.auth.getSession();
 
   const token = session.session?.access_token;
+  // console log the token
+  console.log("Token: ", token);
 
   if (!token) {
-    console.error("No session token found");
     return null;
   }
 

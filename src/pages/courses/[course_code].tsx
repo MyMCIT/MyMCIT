@@ -162,8 +162,6 @@ export default function CourseReviews({
     );
   }
 
-  console.log("current user: ", currentUser);
-
   const summary = courseSummary[0];
 
   const sections = [
