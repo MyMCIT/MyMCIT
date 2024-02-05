@@ -3,7 +3,7 @@ import { Review } from "@/models/review";
 import { Course } from "@/models/course";
 import { supabase } from "@/lib/supabase";
 import Head from "next/head";
-import { Typography } from "@mui/material";
+import { Alert, Snackbar, Typography } from "@mui/material";
 import ReviewCard from "@/components/ReviewCard";
 import SpeedDialTooltipOpen from "@/components/SpeedDial";
 import { useRouter } from "next/router";
@@ -23,6 +23,12 @@ export default function MyReviews() {
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session) {
         console.log("No session found");
+        setOpenSnackbar(true);
+        // wait  before redirecting to give the user time to read the message
+        setTimeout(() => {
+          router.push("/");
+        }, 5000);
+
         return;
       }
 
@@ -43,6 +49,13 @@ export default function MyReviews() {
 
     fetchReviews();
   }, []);
+
+  const handleCloseSnackbar = (event: any, reason: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
 
   const handleDelete = async (reviewId: number, courseCode: string) => {
     setIsSubmitting(true);
@@ -98,6 +111,15 @@ export default function MyReviews() {
           onDelete={() => handleDelete(review.id, review.course.course_code)}
         />
       ))}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert severity="error" sx={{ width: "100%" }}>
+          You are not authenticated! Please log in to view your reviews.
+        </Alert>
+      </Snackbar>
       <SpeedDialTooltipOpen />
     </>
   );

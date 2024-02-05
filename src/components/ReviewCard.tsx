@@ -61,14 +61,12 @@ export default function ReviewCard({ review, course }: any) {
           flexWrap="wrap"
           mt={2}
         >
-          <Box>
+          <Box flexGrow={1} display="flex" justifyContent="flex-end">
             <Chip
               icon={<ClassOutlinedIcon />}
               label={review.semester}
               sx={{ m: 0.5 }}
             />
-          </Box>
-          <Box flexGrow={1} display="flex" justifyContent="flex-end">
             <Chip
               icon={getDifficultyIcon(review.difficulty)}
               label={`Difficulty: ${review.difficulty}`}
