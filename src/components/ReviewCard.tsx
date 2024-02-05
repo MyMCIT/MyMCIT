@@ -6,7 +6,20 @@ import {
   CardContent,
   ChipPropsColorOverrides,
 } from "@mui/material";
-import { School } from "@mui/icons-material";
+import {
+  BeachAccessOutlined,
+  CakeOutlined,
+  FunctionsOutlined,
+  HikingOutlined,
+  RocketLaunchOutlined,
+  School,
+  SentimentDissatisfiedOutlined,
+  SentimentNeutralOutlined,
+  SentimentSatisfiedAltOutlined,
+  SentimentSatisfiedOutlined,
+  SentimentVeryDissatisfiedOutlined,
+  SentimentVerySatisfiedOutlined,
+} from "@mui/icons-material";
 import { OverridableStringUnion } from "@mui/types";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
@@ -34,6 +47,41 @@ type ChipColor = OverridableStringUnion<
   ChipPropsColorOverrides
 >;
 
+// function to get icon based on difficulty value
+const getDifficultyIcon = (difficulty: string) => {
+  switch (difficulty) {
+    case "Very Easy":
+      return <BeachAccessOutlined />;
+    case "Easy":
+      return <CakeOutlined />;
+    case "Medium":
+      return <FunctionsOutlined />;
+    case "Hard":
+      return <HikingOutlined />;
+    case "Very Hard":
+      return <RocketLaunchOutlined />;
+    default:
+      return <AccessTimeOutlinedIcon />;
+  }
+};
+
+// function to get icon based on rating value
+const getRatingIcon = (rating: string) => {
+  switch (rating) {
+    case "Strongly Liked":
+      return <SentimentVerySatisfiedOutlined />;
+    case "Liked":
+      return <SentimentSatisfiedAltOutlined />;
+    case "Neutral":
+      return <SentimentNeutralOutlined />;
+    case "Disliked":
+      return <SentimentDissatisfiedOutlined />;
+    case "Strongly Disliked":
+      return <SentimentVeryDissatisfiedOutlined />;
+    default:
+      return <AccessTimeOutlinedIcon />;
+  }
+};
 // color mappings
 const difficultyColors: { [key: string]: ChipColor } = {
   "Very Easy": "success",
@@ -111,13 +159,17 @@ export default function ReviewCard({ review, course }: any) {
           </Box>
           <Box flexGrow={1} display="flex" justifyContent="flex-end">
             <Chip
+              icon={getDifficultyIcon(review.difficulty)}
               label={`Difficulty: ${review.difficulty}`}
               color={difficultyColor}
+              variant="outlined"
               sx={{ m: 0.5 }}
             />
             <Chip
+              icon={getRatingIcon(review.rating)}
               label={`Rating: ${review.rating}`}
               color={ratingColor}
+              variant="outlined"
               sx={{ m: 0.5 }}
             />
             <Chip
