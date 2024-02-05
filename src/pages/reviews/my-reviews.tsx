@@ -4,7 +4,6 @@ import { Course } from "@/models/course";
 import { supabase } from "@/lib/supabase";
 import Head from "next/head";
 import { Alert, Snackbar, Typography } from "@mui/material";
-import ReviewCard from "@/components/ReviewCard";
 import SpeedDialTooltipOpen from "@/components/SpeedDial";
 import { useRouter } from "next/router";
 import UserReviewCard from "@/components/UserReviewCard";
@@ -48,7 +47,7 @@ export default function MyReviews() {
     };
 
     fetchReviews();
-  }, []);
+  }, [router]);
 
   const handleCloseSnackbar = (event: any, reason: string) => {
     if (reason === "clickaway") {
