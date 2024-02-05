@@ -89,11 +89,14 @@ export default function EditReview({ courses }: any) {
 
     // check if there's an active session
     if (!sessionData?.session) {
-      track("Create-Review-Unauthorized-User");
+      track("Update-Review-Unauthorized-User");
       router.push("/"); // redirect to "/" if no active session
       setIsSubmitting(false);
       return;
     }
+
+    // analytics capture the API call
+    track("Update-Review-Submitted");
 
     const response = await fetch("/api/update-review", {
       method: "PUT",
@@ -116,9 +119,11 @@ export default function EditReview({ courses }: any) {
     setIsSubmitting(false);
 
     if (response.ok) {
+      track("Update-Review-Success");
       setOpenSnackbar(true);
       setTimeout(() => router.push("/reviews/my-reviews"), 2000);
     } else {
+      track("Update-Review-Failed");
       setError("Failed to update review");
     }
   };

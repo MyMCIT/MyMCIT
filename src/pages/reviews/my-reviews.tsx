@@ -8,6 +8,7 @@ import ReviewCard from "@/components/ReviewCard";
 import SpeedDialTooltipOpen from "@/components/SpeedDial";
 import { useRouter } from "next/router";
 import UserReviewCard from "@/components/UserReviewCard";
+import { track } from "@vercel/analytics";
 
 export default function MyReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -51,6 +52,9 @@ export default function MyReviews() {
     // confirm deletion with  user
     if (!confirm("Are you sure you want to delete this review?")) return;
 
+    // track deletion event
+    track("Delete-Review-Submitted");
+
     const response = await fetch(`/api/delete-review`, {
       method: "DELETE",
       headers: {
@@ -64,11 +68,13 @@ export default function MyReviews() {
     });
 
     if (!response.ok) {
+      track("Delete-Review-Failed");
       alert("Failed to delete review.");
       return;
     }
 
     // if delete was successful, remove review from local state
+    track("Delete-Review-Success");
     setReviews(reviews.filter((review) => review.id !== reviewId));
     setIsSubmitting(false);
   };
