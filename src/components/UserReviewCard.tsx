@@ -134,23 +134,20 @@ export default function UserReviewCard({
               </Typography>
             </Box>
           </Box>
-          {canEditDelete && ( // conditionally render based on user
-            <>
-              <IconButton
-                aria-label="more"
-                aria-controls="long-menu"
-                aria-haspopup="true"
-                onClick={handleClick}
-                sx={{
-                  position: "absolute",
-                  right: 8,
-                  top: 8,
-                }}
-              >
-                <MoreVert />
-              </IconButton>
-            </>
-          )}
+
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+          >
+            <MoreVert />
+          </IconButton>
           <Menu
             id="long-menu"
             anchorEl={anchorEl}
