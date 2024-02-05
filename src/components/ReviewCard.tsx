@@ -1,28 +1,9 @@
-import {
-  Chip,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  ChipPropsColorOverrides,
-} from "@mui/material";
-import {
-  BeachAccessOutlined,
-  CakeOutlined,
-  FunctionsOutlined,
-  HikingOutlined,
-  RocketLaunchOutlined,
-  School,
-  SentimentDissatisfiedOutlined,
-  SentimentNeutralOutlined,
-  SentimentSatisfiedAltOutlined,
-  SentimentSatisfiedOutlined,
-  SentimentVeryDissatisfiedOutlined,
-  SentimentVerySatisfiedOutlined,
-} from "@mui/icons-material";
-import { OverridableStringUnion } from "@mui/types";
+import { Chip, Typography, Box, Card, CardContent } from "@mui/material";
+import { School } from "@mui/icons-material";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
+import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
+import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
 
 type CourseReviewSummary = {
   id: number;
@@ -34,76 +15,6 @@ type CourseReviewSummary = {
   averageRating: number;
   [key: string]: number | string;
 };
-
-//  type defs for chip colors
-type ChipColor = OverridableStringUnion<
-  | "default"
-  | "primary"
-  | "secondary"
-  | "error"
-  | "info"
-  | "success"
-  | "warning",
-  ChipPropsColorOverrides
->;
-
-// function to get icon based on difficulty value
-const getDifficultyIcon = (difficulty: string) => {
-  switch (difficulty) {
-    case "Very Easy":
-      return <BeachAccessOutlined />;
-    case "Easy":
-      return <CakeOutlined />;
-    case "Medium":
-      return <FunctionsOutlined />;
-    case "Hard":
-      return <HikingOutlined />;
-    case "Very Hard":
-      return <RocketLaunchOutlined />;
-    default:
-      return <AccessTimeOutlinedIcon />;
-  }
-};
-
-// function to get icon based on rating value
-const getRatingIcon = (rating: string) => {
-  switch (rating) {
-    case "Strongly Liked":
-      return <SentimentVerySatisfiedOutlined />;
-    case "Liked":
-      return <SentimentSatisfiedAltOutlined />;
-    case "Neutral":
-      return <SentimentNeutralOutlined />;
-    case "Disliked":
-      return <SentimentDissatisfiedOutlined />;
-    case "Strongly Disliked":
-      return <SentimentVeryDissatisfiedOutlined />;
-    default:
-      return <AccessTimeOutlinedIcon />;
-  }
-};
-// color mappings
-const difficultyColors: { [key: string]: ChipColor } = {
-  "Very Easy": "success",
-  Easy: "primary",
-  Medium: "default",
-  Hard: "warning",
-  "Very Hard": "error",
-};
-
-const ratingColors: { [key: string]: ChipColor } = {
-  "Strongly Disliked": "error",
-  Disliked: "warning",
-  Neutral: "default",
-  Liked: "primary",
-  "Strongly Liked": "success",
-};
-
-// function to get color based on value
-const getDifficultyColor = (value: string) =>
-  difficultyColors[value as keyof typeof difficultyColors];
-const getRatingColor = (value: string) =>
-  ratingColors[value as keyof typeof ratingColors];
 
 // format date for each review's created_at db date
 const formatDate = (dateString: string) => {

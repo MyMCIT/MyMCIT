@@ -4,17 +4,17 @@ import {
   Box,
   Card,
   CardContent,
-  ChipPropsColorOverrides,
   IconButton,
   Menu,
   MenuItem,
 } from "@mui/material";
 import { MoreVert, School } from "@mui/icons-material";
-import { OverridableStringUnion } from "@mui/types";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
 import React, { useEffect, useState } from "react";
 import { isCurrentUserReview } from "@/lib/userUtils";
+import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
+import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
 
 type CourseReviewSummary = {
   id: number;
@@ -26,41 +26,6 @@ type CourseReviewSummary = {
   averageRating: number;
   [key: string]: number | string;
 };
-
-//  type defs for chip colors
-type ChipColor = OverridableStringUnion<
-  | "default"
-  | "primary"
-  | "secondary"
-  | "error"
-  | "info"
-  | "success"
-  | "warning",
-  ChipPropsColorOverrides
->;
-
-// color mappings
-const difficultyColors: { [key: string]: ChipColor } = {
-  "Very Easy": "success",
-  Easy: "primary",
-  Medium: "default",
-  Hard: "warning",
-  "Very Hard": "error",
-};
-
-const ratingColors: { [key: string]: ChipColor } = {
-  "Strongly Disliked": "error",
-  Disliked: "warning",
-  Neutral: "default",
-  Liked: "primary",
-  "Strongly Liked": "success",
-};
-
-// function to get color based on value
-const getDifficultyColor = (value: string) =>
-  difficultyColors[value as keyof typeof difficultyColors];
-const getRatingColor = (value: string) =>
-  ratingColors[value as keyof typeof ratingColors];
 
 // format date for each review's created_at db date
 const formatDate = (dateString: string) => {
@@ -191,13 +156,17 @@ export default function UserReviewCard({
           </Box>
           <Box flexGrow={1} display="flex" justifyContent="flex-end">
             <Chip
+              icon={getDifficultyIcon(review.difficulty)}
               label={`Difficulty: ${review.difficulty}`}
               color={difficultyColor}
+              variant="outlined"
               sx={{ m: 0.5 }}
             />
             <Chip
+              icon={getRatingIcon(review.rating)}
               label={`Rating: ${review.rating}`}
               color={ratingColor}
+              variant="outlined"
               sx={{ m: 0.5 }}
             />
             <Chip
