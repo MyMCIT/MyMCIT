@@ -1,4 +1,4 @@
-# MyMCIT Project README
+# MyMCIT Project
 
 Welcome to the MyMCIT project repository. This document guides you through setting up and running the project, which utilizes a modern tech stack including NextJS for the frontend, Supabase for backend services, Material-UI (MUI) for UI components, Google OAuth for authentication, and Vercel for deployment.
 
