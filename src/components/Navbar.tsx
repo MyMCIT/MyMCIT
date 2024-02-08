@@ -143,7 +143,7 @@ function UserComponent() {
         const baseUrl =
           process.env.NODE_ENV === "production"
             ? process.env.NEXT_PUBLIC_API_URL
-            : "http://localhost:3000";
+            : "http://localhost:3000/";
         supabase.auth
           .signInWithOAuth({
             provider: "google",
