@@ -5,6 +5,8 @@ import {
   Paper,
   Box,
   ChipPropsColorOverrides,
+  Tooltip,
+  Button,
 } from "@mui/material";
 import { GetStaticPaths } from "next";
 import { supabase } from "@/lib/supabase";
@@ -17,7 +19,7 @@ import ReviewCard from "@/components/ReviewCard";
 import { Session } from "@supabase/supabase-js";
 import { isCurrentUserReview } from "@/lib/userUtils";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import React, { useState } from "react";
 
 type CourseReviewSummary = {
   id: number;
@@ -158,6 +160,8 @@ export default function CourseReviews({
 }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // to track users clicking on the Follow button for a course
+  const [isFollowing, setIsFollowing] = useState(false);
 
   if (!reviews.length) {
     return (
@@ -213,6 +217,23 @@ export default function CourseReviews({
 
       <Typography variant="h4" align="center" gutterBottom mt={3} mb={3}>
         Reviews for {course.course_code}: {course.course_name}
+        <Tooltip
+          title={
+            isFollowing
+              ? "You will receive email notifications when a new review for this course is posted."
+              : "Click to follow this course and receive email notifications when a new review is posted."
+          }
+          arrow
+        >
+          <Button
+            variant="contained"
+            color={isFollowing ? "secondary" : "primary"}
+            onClick={() => setIsFollowing(!isFollowing)}
+            style={{ marginLeft: "20px" }}
+          >
+            {isFollowing ? "Unfollow" : "Follow"}
+          </Button>
+        </Tooltip>
       </Typography>
 
       <Paper sx={{ maxWidth: 800, margin: "30px auto", padding: 2 }}>
