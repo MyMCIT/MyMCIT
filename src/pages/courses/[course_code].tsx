@@ -17,9 +17,9 @@ import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
 import { Session } from "@supabase/supabase-js";
-import { isCurrentUserReview } from "@/lib/userUtils";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { throttle } from "lodash";
 
 type CourseReviewSummary = {
   id: number;
@@ -44,6 +44,11 @@ type ChipColor = OverridableStringUnion<
   ChipPropsColorOverrides
 >;
 
+let apiUrl =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_API_URL
+    : "http://localhost:3000";
+
 export const getStaticPaths: GetStaticPaths = async () => {
   const { data: courses, error } = await supabase
     .from("Courses")
@@ -59,10 +64,6 @@ export const getStaticProps = async (
   context: GetStaticPropsContext<{ course_code: string }>,
 ) => {
   const { course_code } = context.params as { course_code: string };
-  let apiUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_API_URL
-      : "http://localhost:3000";
 
   // fetch course data
   const resCourse = await fetch(
@@ -158,6 +159,7 @@ export default function CourseReviews({
 }: InferGetStaticPropsType<typeof getStaticProps> & {
   currentUser: Session | null;
 }) {
+  console.log("currentUser", currentUser);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   // to track users clicking on the Follow button for a course
@@ -170,6 +172,32 @@ export default function CourseReviews({
       </Typography>
     );
   }
+
+  // for throttling spam clicking on the Follow button
+  const throttledToggleFollow = throttle(
+    async () => {
+      try {
+        const res = await fetch(`${apiUrl}/api/follow`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user: currentUser, courseId: course.id }),
+        });
+
+        if (res.status !== 200) {
+          throw new Error("Unable to toggle follow/unfollow status.");
+        }
+
+        const { isNowFollowing } = await res.json();
+        setIsFollowing(isNowFollowing);
+      } catch (err) {
+        alert("An error occurred. Please try again.");
+      }
+    },
+    30000,
+    { trailing: false },
+  );
 
   const handleDelete = async (reviewId: number, courseCode: string) => {
     setIsSubmitting(true);
@@ -225,14 +253,18 @@ export default function CourseReviews({
           }
           arrow
         >
-          <Button
-            variant="contained"
-            color={isFollowing ? "secondary" : "primary"}
-            onClick={() => setIsFollowing(!isFollowing)}
-            style={{ marginLeft: "20px" }}
-          >
-            {isFollowing ? "Unfollow" : "Follow"}
-          </Button>
+          {currentUser ? (
+            <Button
+              variant="contained"
+              color={isFollowing ? "secondary" : "primary"}
+              onClick={throttledToggleFollow}
+              style={{ marginLeft: "20px" }}
+            >
+              {isFollowing ? "Unfollow" : "Follow"}
+            </Button>
+          ) : (
+            <></>
+          )}
         </Tooltip>
       </Typography>
 
