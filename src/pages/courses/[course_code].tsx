@@ -161,8 +161,6 @@ export default function CourseReviews({
 }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // to track users clicking on the Follow button for a course
-  const [isFollowing, setIsFollowing] = useState(false);
 
   if (!reviews.length) {
     return (
@@ -171,35 +169,6 @@ export default function CourseReviews({
       </Typography>
     );
   }
-
-  // for throttling spam clicking on the Follow button
-  const throttledToggleFollow = throttle(
-    async () => {
-      try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        console.log("User object pre-fetch", user);
-        const res = await fetch(`/api/follow`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionData.session?.access_token}`,
-          },
-          body: JSON.stringify({ courseId: course.id }),
-        });
-
-        if (res.status !== 200) {
-          throw new Error("Unable to toggle follow/unfollow status.");
-        }
-
-        const { isNowFollowing } = await res.json();
-        setIsFollowing(isNowFollowing);
-      } catch (err) {
-        alert("An error occurred. Please try again.");
-      }
-    },
-    30000,
-    { trailing: false },
-  );
 
   const handleDelete = async (reviewId: number, courseCode: string) => {
     setIsSubmitting(true);
@@ -247,27 +216,6 @@ export default function CourseReviews({
 
       <Typography variant="h4" align="center" gutterBottom mt={3} mb={3}>
         Reviews for {course.course_code}: {course.course_name}
-        <Tooltip
-          title={
-            isFollowing
-              ? "You will receive email notifications when a new review for this course is posted."
-              : "Click to follow this course and receive email notifications when a new review is posted."
-          }
-          arrow
-        >
-          {user ? (
-            <Button
-              variant="contained"
-              color={isFollowing ? "secondary" : "primary"}
-              onClick={throttledToggleFollow}
-              style={{ marginLeft: "20px" }}
-            >
-              {isFollowing ? "Unfollow" : "Follow"}
-            </Button>
-          ) : (
-            <></>
-          )}
-        </Tooltip>
       </Typography>
 
       <Paper sx={{ maxWidth: 800, margin: "30px auto", padding: 2 }}>
