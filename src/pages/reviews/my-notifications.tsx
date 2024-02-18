@@ -1,4 +1,4 @@
-import type { InferGetStaticPropsType, GetStaticProps, NextPage } from "next";
+import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import {
   DataGrid,
   GridColDef,
@@ -11,7 +11,6 @@ import { Box } from "@mui/system";
 import { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import { supabase } from "@/lib/supabase";
-import { throttle } from "lodash";
 import { User } from "@supabase/supabase-js";
 
 type Course = {
@@ -56,41 +55,36 @@ export default function MyNotifications({
 
   // fetch follow-status from '/api/follow-status' for the user here using the fetch API,
   // and set the result to followStatus state, which shows which courses the user is following.
-  const fetchFollowStatus = async () => {
+  const fetchFollowStatus = useCallback(async () => {
     if (!user) return;
 
-    try {
-      const { data: session } = await supabase.auth.getSession();
+    const { data: sessionData } = await supabase.auth.getSession();
 
-      const res = await fetch("/api/follow-status", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.session?.access_token}`,
-        },
+    const response = await fetch("/api/follow-status", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionData?.session?.access_token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      const coursesMap: Record<number, string> = courses.reduce(
+        (a, course) => ({ ...a, [course.id]: course.course_code }),
+        {},
+      );
+      const { followStatus } = await response.json();
+      let followStatusRecord: Record<string, boolean> = {};
+
+      followStatus.forEach((status: any) => {
+        followStatusRecord[coursesMap[status.course_id]] = status.is_following;
       });
 
-      if (res.status === 200) {
-        const coursesMap: Record<number, string> = courses.reduce(
-          (a, course) => ({ ...a, [course.id]: course.course_code }),
-          {},
-        );
-        const { followStatus } = await res.json();
-        let followStatusRecord: Record<string, boolean> = {};
-
-        followStatus.forEach((status: any) => {
-          followStatusRecord[coursesMap[status.course_id]] =
-            status.is_following;
-        });
-
-        setFollowStatus(followStatusRecord);
-      } else {
-        throw new Error("Unable to fetch follow status.");
-      }
-    } catch (error) {
-      console.log(error);
+      setFollowStatus(followStatusRecord);
+    } else {
+      throw new Error("Unable to fetch follow status.");
     }
-  };
+  }, [courses, user]);
 
   const throttledToggleFollow = useCallback(
     async (courseId: string) => {
@@ -145,7 +139,7 @@ export default function MyNotifications({
 
   useEffect(() => {
     fetchFollowStatus();
-  }, [courses, user]);
+  }, [courses, user, fetchFollowStatus]);
 
   // note that unlike courses/index.tsx, id is set to course.id here because api/follow takes in the course id
   // as a param, whereas courses/index.tsx id is set to course.course_code because the user is being routed
@@ -192,7 +186,7 @@ export default function MyNotifications({
               color={followingValue ? "secondary" : "primary"}
               onClick={() => throttledToggleFollow(String(params.row.id))}
               style={{ marginLeft: "20px" }}
-              disabled={!!disableFollowButton[params.row.id]}
+              disabled={disableFollowButton[params.row.id]}
             >
               {followingValue ? "Unfollow" : "Follow"}
             </Button>
