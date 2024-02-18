@@ -125,6 +125,14 @@ function UserComponent() {
           </MenuItem>
           <MenuItem
             onClick={() => {
+              track("My-Notifications-Navbar-Clicked");
+              handleUserNavigation("/reviews/my-notifications");
+            }}
+          >
+            My Notifications
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
               track("Logout");
               supabase.auth.signOut();
             }}

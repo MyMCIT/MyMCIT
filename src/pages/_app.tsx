@@ -26,42 +26,22 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const setUserAsync = async () => {
-      // Get the existing session
-      let { data: sessionData } = await supabase.auth.getSession();
+    const userData = async () => {
+      const { data: userData } = await supabase.auth.getUser();
 
-      // get the token from the session
-      const token = sessionData.session?.access_token;
-
-      // use the token to get the user, if no token set user to null
-      if (!token) {
-        setUser(null);
-        return;
-      }
-
-      // get a new instance of supabase client for the request with the token
-      const supabaseClient = authSupabase(token);
-
-      // fetch the user using the new instance of Supabase client
-      const { data: userData, error } = await supabaseClient.auth.getUser();
-
-      // set the user
       setUser(userData.user ?? null);
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          setUser(session?.user ?? null);
+        },
+      );
+
+      return () => {
+        authListener && authListener.subscription.unsubscribe();
+      };
     };
 
-    setUserAsync();
-
-    // Listen to session changes (logging in/out)
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-      },
-    );
-
-    // Cleanup function
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
+    userData();
   }, []);
 
   return (

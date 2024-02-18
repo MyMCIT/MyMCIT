@@ -16,9 +16,9 @@ import { Course } from "@/models/course";
 import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
-import { Session } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { throttle } from "lodash";
 
 type CourseReviewSummary = {
@@ -155,11 +155,10 @@ export default function CourseReviews({
   course,
   courseSummary,
   reviews,
-  currentUser,
+  user,
 }: InferGetStaticPropsType<typeof getStaticProps> & {
-  currentUser: Session | null;
+  user: User | null;
 }) {
-  console.log("currentUser", currentUser);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   // to track users clicking on the Follow button for a course
@@ -177,12 +176,15 @@ export default function CourseReviews({
   const throttledToggleFollow = throttle(
     async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/follow`, {
+        const { data: sessionData } = await supabase.auth.getSession();
+        console.log("User object pre-fetch", user);
+        const res = await fetch(`/api/follow`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionData.session?.access_token}`,
           },
-          body: JSON.stringify({ user: currentUser, courseId: course.id }),
+          body: JSON.stringify({ courseId: course.id }),
         });
 
         if (res.status !== 200) {
@@ -253,7 +255,7 @@ export default function CourseReviews({
           }
           arrow
         >
-          {currentUser ? (
+          {user ? (
             <Button
               variant="contained"
               color={isFollowing ? "secondary" : "primary"}
