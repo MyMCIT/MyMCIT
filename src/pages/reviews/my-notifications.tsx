@@ -49,35 +49,90 @@ export default function MyNotifications({
   const router = useRouter();
 
   const [followStatus, setFollowStatus] = useState<Record<string, boolean>>({});
+  // for rate limiting
+  const [disableFollowButton, setDisableFollowButton] = useState<
+    Record<string, boolean>
+  >({});
 
-  const throttledToggleFollow = useCallback(
-    throttle(
-      async (courseId: string) => {
-        if (!user) {
-          return;
-        }
-        const { data: sessionData } = await supabase.auth.getSession();
-        console.log("User object pre-fetch", user);
-        const res = await fetch(`/api/follow`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionData?.session?.access_token}`,
-          },
-          body: JSON.stringify({ courseId }),
+  // fetch follow-status from '/api/follow-status' for the user here using the fetch API,
+  // and set the result to followStatus state, which shows which courses the user is following.
+  const fetchFollowStatus = async () => {
+    if (!user) return;
+
+    try {
+      const { data: session } = await supabase.auth.getSession();
+
+      const res = await fetch("/api/follow-status", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
+      });
+
+      if (res.status === 200) {
+        const coursesMap: Record<number, string> = courses.reduce(
+          (a, course) => ({ ...a, [course.id]: course.course_code }),
+          {},
+        );
+        const { followStatus } = await res.json();
+        let followStatusRecord: Record<string, boolean> = {};
+
+        followStatus.forEach((status: any) => {
+          followStatusRecord[coursesMap[status.course_id]] =
+            status.is_following;
         });
 
-        if (res.status !== 200) {
-          throw new Error("Unable to toggle follow/unfollow status.");
-        }
+        setFollowStatus(followStatusRecord);
+      } else {
+        throw new Error("Unable to fetch follow status.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-        const { isNowFollowing } = await res.json();
-        setFollowStatus({ ...followStatus, [courseId]: isNowFollowing });
-      },
-      30000,
-      { trailing: false },
-    ),
-    [followStatus, user],
+  const throttledToggleFollow = useCallback(
+    async (courseId: string) => {
+      if (!user || disableFollowButton[courseId]) {
+        return;
+      }
+
+      // Disable the button as a rate-limiting measure
+      setDisableFollowButton((prevState) => ({
+        ...prevState,
+        [courseId]: true,
+      }));
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log("User object pre-fetch", user);
+      const res = await fetch(`/api/follow`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionData?.session?.access_token}`,
+        },
+        body: JSON.stringify({ courseId }),
+      });
+
+      if (res.status !== 200) {
+        throw new Error("Unable to toggle follow/unfollow status.");
+      }
+
+      const { isNowFollowing } = await res.json();
+      setFollowStatus({ ...followStatus, [courseId]: isNowFollowing });
+
+      // updates the button state after the follow status has been updated
+      await fetchFollowStatus();
+      // disables the button for 5 minutes, then re-enables it
+      setTimeout(() => {
+        setDisableFollowButton((prevState) => ({
+          ...prevState,
+          [courseId]: false,
+        }));
+      }, 300000);
+    },
+
+    [disableFollowButton, fetchFollowStatus, followStatus, user],
   );
 
   // by default sort DataGrid in ascending order
@@ -89,44 +144,6 @@ export default function MyNotifications({
   ]);
 
   useEffect(() => {
-    // fetch follow-status from '/api/follow-status' for the user here using the fetch API,
-    // and set the result to followStatus state, which shows which courses the user is following.
-    const fetchFollowStatus = async () => {
-      if (!user) return;
-
-      try {
-        const { data: session } = await supabase.auth.getSession();
-
-        const res = await fetch("/api/follow-status", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session.session?.access_token}`,
-          },
-        });
-
-        if (res.status === 200) {
-          const coursesMap: Record<number, string> = courses.reduce(
-            (a, course) => ({ ...a, [course.id]: course.course_code }),
-            {},
-          );
-          const { followStatus } = await res.json();
-          let followStatusRecord: Record<string, boolean> = {};
-
-          followStatus.forEach((status: any) => {
-            followStatusRecord[coursesMap[status.course_id]] =
-              status.is_following;
-          });
-
-          setFollowStatus(followStatusRecord);
-        } else {
-          throw new Error("Unable to fetch follow status.");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     fetchFollowStatus();
   }, [courses, user]);
 
@@ -162,9 +179,11 @@ export default function MyNotifications({
         return (
           <Tooltip
             title={
-              followingValue
-                ? "You will receive email notifications when a new review for this course is posted."
-                : "Click to follow this course and receive email notifications when a new review is posted."
+              disableFollowButton[params.row.id]
+                ? "Rate limit reached. Please try again in 5 minutes."
+                : followingValue
+                  ? "You will receive email notifications when a new review for this course is posted."
+                  : "Click to follow this course and receive email notifications when a new review is posted."
             }
             arrow
           >
@@ -173,6 +192,7 @@ export default function MyNotifications({
               color={followingValue ? "secondary" : "primary"}
               onClick={() => throttledToggleFollow(String(params.row.id))}
               style={{ marginLeft: "20px" }}
+              disabled={!!disableFollowButton[params.row.id]}
             >
               {followingValue ? "Unfollow" : "Follow"}
             </Button>
@@ -236,7 +256,7 @@ export default function MyNotifications({
     // If the user is not authenticated, redirect them to the login page.
 
     if (typeof window !== "undefined") {
-      router.replace("/login");
+      router.replace("/");
     }
 
     return null;
