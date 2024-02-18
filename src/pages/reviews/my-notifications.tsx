@@ -130,8 +130,11 @@ export default function MyNotifications({
     fetchFollowStatus();
   }, [courses, user]);
 
+  // note that unlike courses/index.tsx, id is set to course.id here because api/follow takes in the course id
+  // as a param, whereas courses/index.tsx id is set to course.course_code because the user is being routed
+  // to the course page using the course code.
   let rows = courses.map((course) => ({
-    id: course.course_code,
+    id: course.id,
     course_name: course.course_name,
     course_code: course.course_code,
     isFollowing: followStatus[course.course_code],
@@ -168,7 +171,7 @@ export default function MyNotifications({
             <Button
               variant="contained"
               color={followingValue ? "secondary" : "primary"}
-              onClick={() => throttledToggleFollow(String(params.id))}
+              onClick={() => throttledToggleFollow(String(params.row.id))}
               style={{ marginLeft: "20px" }}
             >
               {followingValue ? "Unfollow" : "Follow"}
