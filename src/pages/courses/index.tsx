@@ -21,7 +21,7 @@ export const getStaticProps: GetStaticProps<{
   let apiUrl;
 
   if (process.env.NODE_ENV === "production") {
-    apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    apiUrl = `https://${process.env.NEXT_PUBLIC_API_URL}`;
   } else {
     apiUrl = "http://127.0.0.1:3000";
   }
