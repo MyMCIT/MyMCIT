@@ -56,7 +56,7 @@ export default function ReviewsPage({
       <Head>
         <title>Reviews</title>
       </Head>
-      <Typography variant="h4" align="center" gutterBottom mt={3} mb={3}>
+      <Typography variant="h5" align="center" gutterBottom mt={3} mb={3}>
         All Course Reviews
       </Typography>
       {reviews.length > 0 ? (
