@@ -29,7 +29,7 @@ export const getStaticProps: GetStaticProps = async () => {
   let apiUrl;
 
   if (process.env.NODE_ENV === "production") {
-    apiUrl = `https://${process.env.NEXT_PUBLIC_API_URL}`;
+    apiUrl = process.env.NEXT_PUBLIC_API_URL;
   } else {
     apiUrl = "http://127.0.0.1:3000";
   }
@@ -103,7 +103,7 @@ export default function EditReview({ courses }: any) {
 
     const apiUrl =
       process.env.NODE_ENV === "production"
-        ? `https://${process.env.NEXT_PUBLIC_API_URL}`
+        ? process.env.NEXT_PUBLIC_API_URL
         : "http://127.0.0.1:3000";
 
     const response = await axios(`${apiUrl}/api/update-review`, {

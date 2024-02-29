@@ -47,7 +47,7 @@ export default async function deleteReview(
   try {
     let apiUrl =
       process.env.NODE_ENV === "production"
-        ? `https://${process.env.NEXT_PUBLIC_API_URL}`
+        ? process.env.NEXT_PUBLIC_API_URL
         : "http://127.0.0.1:3000";
 
     // trigger on-demand ISR with course_code for revalidation

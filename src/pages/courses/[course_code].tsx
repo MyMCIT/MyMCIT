@@ -62,7 +62,7 @@ export const getStaticProps = async (
   const { course_code } = context.params as { course_code: string };
   let apiUrl =
     process.env.NODE_ENV === "production"
-      ? `https://${process.env.NEXT_PUBLIC_API_URL}`
+      ? process.env.NEXT_PUBLIC_API_URL
       : "http://127.0.0.1:3000";
 
   try {
@@ -187,7 +187,7 @@ export default function CourseReviews({
 
     const apiUrl =
       process.env.NODE_ENV === "production"
-        ? `https://${process.env.NEXT_PUBLIC_API_URL}`
+        ? process.env.NEXT_PUBLIC_API_URL
         : "http://127.0.0.1:3000";
 
     const response = await axios(`${apiUrl}/api/delete-review`, {
