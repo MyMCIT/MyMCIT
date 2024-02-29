@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from "react";
 import { Review } from "@/models/review";
 import { Course } from "@/models/course";
@@ -8,6 +10,7 @@ import SpeedDialTooltipOpen from "@/components/SpeedDial";
 import { useRouter } from "next/router";
 import UserReviewCard from "@/components/UserReviewCard";
 import { track } from "@vercel/analytics";
+import axios from "axios";
 
 export default function MyReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -31,18 +34,23 @@ export default function MyReviews() {
         return;
       }
 
-      const response = await fetch("/api/user-reviews", {
+      const apiUrl =
+        process.env.NODE_ENV === "production"
+          ? process.env.NEXT_PUBLIC_API_URL
+          : "http://127.0.0.1:3000";
+
+      const response = await axios(`${apiUrl}/api/user-reviews`, {
         headers: {
           Authorization: `Bearer ${session.session.access_token}`,
         },
-      });
+      })
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         console.error("Failed to fetch reviews");
         return;
       }
 
-      const data = await response.json();
+      const data = await response.data;
       setReviews(data.reviews);
     };
 
@@ -67,19 +75,24 @@ export default function MyReviews() {
     // track deletion event
     track("Delete-Review-Submitted");
 
-    const response = await fetch(`/api/delete-review`, {
+    const apiUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_API_URL
+        : "http://127.0.0.1:3000";
+
+    const response = await axios(`${apiUrl}/api/delete-review`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionData.session?.access_token}`,
       },
-      body: JSON.stringify({
+      data: JSON.stringify({
         id: reviewId,
         course_code: courseCode,
       }),
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       track("Delete-Review-Failed");
       alert("Failed to delete review.");
       return;

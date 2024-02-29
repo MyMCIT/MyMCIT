@@ -1,3 +1,5 @@
+'use client'
+
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { useRouter } from "next/router";
@@ -5,6 +7,7 @@ import { Grid } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import Head from "next/head";
+import axios from "axios";
 
 type Course = {
   id: number;
@@ -20,11 +23,11 @@ export const getStaticProps: GetStaticProps<{
   if (process.env.NODE_ENV === "production") {
     apiUrl = process.env.NEXT_PUBLIC_API_URL;
   } else {
-    apiUrl = "http://localhost:3000";
+    apiUrl = "http://127.0.0.1:3000";
   }
-  const res = await fetch(`${apiUrl}/api/courses`);
+  const res = await axios(`${apiUrl}/api/courses`);
 
-  const courses: Course[] = await res.json();
+  const courses: Course[] = await res.data;
 
   console.log("Courses frontend: ", courses);
 

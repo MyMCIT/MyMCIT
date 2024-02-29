@@ -1,4 +1,7 @@
-import { authSupabase, supabase } from "@/lib/supabase";
+'use client'
+
+import { authSupabase } from "@/lib/supabase";
+import axios from "axios";
 
 export default async function createReview(req: any, res: any) {
   // parse course_id to string
@@ -55,13 +58,13 @@ export default async function createReview(req: any, res: any) {
     if (process.env.NODE_ENV === "production") {
       apiUrl = process.env.NEXT_PUBLIC_API_URL;
     } else {
-      apiUrl = "http://localhost:3000";
+      apiUrl = "http://127.0.0.1:3000";
     } // Fetch revalidate API to trigger on-demand ISR
-    const response = await fetch(
+    const response = await axios(
       `${apiUrl}/api/revalidate?secret=${process.env.ON_DEMAND_ISR_TOKEN}&course=${course_code}`,
     );
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       return new Error("Error revalidating");
     }
   } catch (e: any) {

@@ -1,3 +1,5 @@
+'use client'
+
 export default async function handler(req: any, res: any) {
   // confirm this is a valid req by checking the secret token
   if (req.query.secret !== process.env.ON_DEMAND_ISR_TOKEN) {

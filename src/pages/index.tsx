@@ -1,3 +1,5 @@
+'use client'
+
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import {
   DataGrid,
@@ -21,6 +23,7 @@ import { useState } from "react";
 import Head from "next/head";
 import { CourseReviewSummary } from "@/models/course-review-summary";
 import { track } from "@vercel/analytics";
+import axios from "axios";
 
 export const getStaticProps: GetStaticProps<{
   courseSummaries: CourseReviewSummary[];
@@ -30,11 +33,11 @@ export const getStaticProps: GetStaticProps<{
   if (process.env.NODE_ENV === "production") {
     apiUrl = process.env.NEXT_PUBLIC_API_URL;
   } else {
-    apiUrl = "http://localhost:3000";
+    apiUrl = "http://127.0.0.1:3000";
   }
 
-  const res = await fetch(`${apiUrl}/api/course-summaries`);
-  const courseSummaries: CourseReviewSummary[] = await res.json();
+  const res = await axios(`${apiUrl}/api/course-summaries`);
+  const courseSummaries: CourseReviewSummary[] = await res.data;
 
   return {
     props: { courseSummaries },

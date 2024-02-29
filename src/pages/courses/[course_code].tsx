@@ -1,3 +1,5 @@
+'use client'
+
 import type { InferGetStaticPropsType, GetStaticPropsContext } from "next";
 import {
   Typography,
@@ -18,6 +20,7 @@ import { Session } from "@supabase/supabase-js";
 import { isCurrentUserReview } from "@/lib/userUtils";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import axios from "axios";
 
 type CourseReviewSummary = {
   id: number;
@@ -60,63 +63,70 @@ export const getStaticProps = async (
   let apiUrl =
     process.env.NODE_ENV === "production"
       ? process.env.NEXT_PUBLIC_API_URL
-      : "http://localhost:3000";
+      : "http://127.0.0.1:3000";
 
-  // fetch course data
-  const resCourse = await fetch(
-    `${apiUrl}/api/courses?course_code=${course_code}`,
-  );
-  const courses: Course[] = await resCourse.json();
+  try {
+    // fetch course data
+    const resCourse = await axios(
+      `${apiUrl}/api/courses?course_code=${course_code}`,
+    );
 
-  // ensure course is found
-  const course = courses.length > 0 ? courses[0] : null;
-  if (!course) {
+    const courses: Course[] = await resCourse.data;
+
+    // ensure course is found
+    const course = courses.length > 0 ? courses[0] : null;
+    if (!course) {
+      return { notFound: true };
+    }
+
+    // fetch course summary
+    const resSummary = await axios(
+      `${apiUrl}/api/course-summaries?course_code=${course_code}`,
+    );
+    const courseSummary: CourseReviewSummary[] = await resSummary.data;
+
+    // fetch course reviews
+    const resReviews = await axios(
+      `${apiUrl}/api/reviews?course_id=${course.id}`,
+    );
+    let reviews: Review[] = await resReviews.data;
+
+    // sort the reviews by semester and 'created_at'
+    reviews = reviews.sort((a, b) => {
+      const termMap: { [key in "Spring" | "Summer" | "Fall"]: string } = {
+        Spring: "10",
+        Summer: "20",
+        Fall: "30",
+      };
+
+      const parseSemester = (semester: string) => {
+        const [term, year] = semester.split(" ");
+        // check if term is a valid key in termMap, if not return 0
+        return term in termMap
+          ? parseInt(year + termMap[term as "Spring" | "Summer" | "Fall"])
+          : 0;
+      };
+
+      const semesterDiff = parseSemester(b.semester) - parseSemester(a.semester);
+
+      if (semesterDiff !== 0) return semesterDiff;
+
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+    return {
+      props: {
+        course,
+        courseSummary,
+        reviews,
+      },
+      revalidate: 86400,
+    };
+
+  } catch (error) {
+    console.error("Error fetching course data:", error);
     return { notFound: true };
   }
-
-  // fetch course summary
-  const resSummary = await fetch(
-    `${apiUrl}/api/course-summaries?course_code=${course_code}`,
-  );
-  const courseSummary: CourseReviewSummary[] = await resSummary.json();
-
-  // fetch course reviews
-  const resReviews = await fetch(
-    `${apiUrl}/api/reviews?course_id=${course.id}`,
-  );
-  let reviews: Review[] = await resReviews.json();
-
-  // sort the reviews by semester and 'created_at'
-  reviews = reviews.sort((a, b) => {
-    const termMap: { [key in "Spring" | "Summer" | "Fall"]: string } = {
-      Spring: "10",
-      Summer: "20",
-      Fall: "30",
-    };
-
-    const parseSemester = (semester: string) => {
-      const [term, year] = semester.split(" ");
-      // check if term is a valid key in termMap, if not return 0
-      return term in termMap
-        ? parseInt(year + termMap[term as "Spring" | "Summer" | "Fall"])
-        : 0;
-    };
-
-    const semesterDiff = parseSemester(b.semester) - parseSemester(a.semester);
-
-    if (semesterDiff !== 0) return semesterDiff;
-
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-  });
-
-  return {
-    props: {
-      course,
-      courseSummary,
-      reviews,
-    },
-    revalidate: 86400,
-  };
 };
 
 // color mappings
@@ -175,19 +185,24 @@ export default function CourseReviews({
     // confirm deletion with  user
     if (!confirm("Are you sure you want to delete this review?")) return;
 
-    const response = await fetch(`/api/delete-review`, {
+    const apiUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_API_URL
+        : "http://127.0.0.1:3000";
+
+    const response = await axios(`${apiUrl}/api/delete-review`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionData.session?.access_token}`,
       },
-      body: JSON.stringify({
+      data: JSON.stringify({
         id: reviewId,
         course_code: courseCode,
       }),
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       alert("Failed to delete review.");
       return;
     }

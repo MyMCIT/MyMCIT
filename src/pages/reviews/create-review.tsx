@@ -1,3 +1,5 @@
+'use client'
+
 import { SyntheticEvent, useEffect, useState } from "react";
 import {
   Alert,
@@ -20,6 +22,7 @@ import { Course } from "@/models/course";
 import { supabase } from "@/lib/supabase";
 import Head from "next/head";
 import { track } from "@vercel/analytics";
+import axios from "axios";
 
 export const getStaticProps: GetStaticProps = async () => {
   let apiUrl;
@@ -27,10 +30,10 @@ export const getStaticProps: GetStaticProps = async () => {
   if (process.env.NODE_ENV === "production") {
     apiUrl = process.env.NEXT_PUBLIC_API_URL;
   } else {
-    apiUrl = "http://localhost:3000";
+    apiUrl = "http://127.0.0.1:3000";
   }
-  const res = await fetch(`${apiUrl}/api/courses`);
-  const courses = await res.json();
+  const res = await axios(`${apiUrl}/api/courses`);
+  const courses = await res.data;
 
   // sort the courses in alphabetical order
   const sortedCourses: Course[] = courses.sort(
@@ -84,13 +87,21 @@ export default function CreateReview({ courses }: any) {
       return;
     }
 
-    const response = await fetch("/api/create-review", {
+    let apiUrl;
+
+    if (process.env.NODE_ENV === "production") {
+      apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    } else {
+      apiUrl = "http://127.0.0.1:3000";
+    }
+
+    const response = await axios(`${apiUrl}/api/create-review`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionData.session?.access_token}`,
       },
-      body: JSON.stringify({
+      data: JSON.stringify({
         course_id: course?.id,
         course_code: course?.course_code,
         semester: semester,
@@ -102,9 +113,9 @@ export default function CreateReview({ courses }: any) {
     });
 
     setIsSubmitting(false);
-    const data = await response.json();
+    const data = await response.data;
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       track("Create-Review-Failed");
       throw new Error(`HTTP error! status: ${response.status}`);
     }

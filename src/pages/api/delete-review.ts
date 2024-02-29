@@ -1,5 +1,8 @@
+'use client'
+
 import { NextApiRequest, NextApiResponse } from "next";
 import { authSupabase } from "@/lib/supabase";
+import axios from "axios";
 
 export default async function deleteReview(
   req: NextApiRequest,
@@ -45,13 +48,13 @@ export default async function deleteReview(
     let apiUrl =
       process.env.NODE_ENV === "production"
         ? process.env.NEXT_PUBLIC_API_URL
-        : "http://localhost:3000";
+        : "http://127.0.0.1:3000";
 
     // trigger on-demand ISR with course_code for revalidation
-    const response = await fetch(
+    const response = await axios(
       `${apiUrl}/api/revalidate?secret=${process.env.ON_DEMAND_ISR_TOKEN}&course=${course_code}`,
     );
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error("Error revalidating");
     }
   } catch (e: any) {
