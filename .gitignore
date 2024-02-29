@@ -1,21 +1,23 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# ide
+.idea/
+
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.js
 .yarn/install-state.gz
 
 # testing
-/coverage
-/.idea/
+coverage/
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
@@ -36,4 +38,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-/client_secret_463023643481-emdp2ign2q1iud5pscavbgo3o33gl5lc.apps.googleusercontent.com.json
+client_secret_463023643481-emdp2ign2q1iud5pscavbgo3o33gl5lc.apps.googleusercontent.com.json
+
+# others
+supabase/

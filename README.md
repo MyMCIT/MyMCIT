@@ -34,45 +34,49 @@ In the context of MyMCIT, a web application for students to read and write revie
 
 ### Prerequisites
 
-- Node.js installed (LTS version recommended). The initial version was built with `LTS/hydrogen` (`v18.18.0`).
+- Node.js installed (LTS version recommended), preferably with `nvm` the [Node Version Manager](https://github.com/nvm-sh/nvm). The initial version was built with `LTS/hydrogen` (`v18`).
 - Login credentials to the Supabase account with the project DB.
 - Google Cloud Platform account for setting up OAuth.
 
 ### Local Development
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-repository/mymcit.git
-   cd mymcit
-   ```
+1. **Clone the repository after forking it as your own repo**:
+    ```bash
+    git clone https://github.com/your-repository/MyMCIT.git
+    cd MyMCIT
+    ```
 
-2. **Install dependencies**: Note that this project uses `npm` for dependency management.
-   ```bash
-   npm install
-   ```
+2. **Install the dependencies**: Note that this project uses `npm` for dependency management.
+    ```bash
+    npm install
+    ```
+    This installs all the required dependencies for the project. A simplified version of this command is
+    ```bash
+    npm i
+    ```
 
 3. **Set up environment variables**:
-    - Copy the `.env.template` file to `.env.local`.
+    - Copy the `.env.template` file to `.env`.
     - Fill in the environment variables with the MyMCIT Supabase and Google OAuth credentials.
 
 4. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
+    ```bash
+    npm run dev
+    ```
    This starts the application on `http://localhost:3000`.
 
 ### Production
 
 1. **Build the application**:
-   ```bash
-   npm run build
-   ```
+    ```bash
+    npm run build
+    ```
    Check for any pre-rendering errors that might prevent deployment.
 
 2. **Start the production server**:
-   ```bash
-   npm start
-   ```
+    ```bash
+    npm start
+    ```
 
 ## Before Committing
 
@@ -90,5 +94,5 @@ Please read the more comprehensive file, `APPINFO.md`, for more information abou
 
 We welcome contributions! Please read the `CONTRIBUTING.md` file for guidelines on how to contribute to this project. Let's make something great together.
 
-Thank you for joining the MyMCIT project. Let's build something amazing.
+Thank you for joining the MyMCIT project. Let's build something amazing together!
 

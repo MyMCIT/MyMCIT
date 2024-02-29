@@ -182,8 +182,8 @@ export default function Navbar({ themeMode, setThemeMode }: any) {
             <Image
               src="/upenn-logo.svg"
               alt="UPenn Logo"
-              height={48}
-              width={48}
+              height={36}
+              width={36}
             />
           </StyledLink>
           <StyledLink

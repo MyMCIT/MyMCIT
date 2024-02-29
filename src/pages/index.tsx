@@ -1,5 +1,10 @@
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
-import { DataGrid, GridColDef, GridSortModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridSortModel,
+  GridToolbar,
+} from "@mui/x-data-grid";
 import { useRouter } from "next/router";
 import {
   FormControlLabel,
@@ -248,6 +253,15 @@ export default function Home({
                 autoHeight // setting autoHeight to adjust grid height to content
                 sortModel={sortModel}
                 onSortModelChange={(model) => setSortModel(model)}
+                slots={{ toolbar: GridToolbar }}
+                slotProps={{
+                  toolbar: {
+                    showQuickFilter: true,
+                  },
+                }}
+                disableColumnFilter
+                disableColumnSelector
+                disableDensitySelector
               />
             </div>
           </Grid>
