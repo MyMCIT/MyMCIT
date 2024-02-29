@@ -14,7 +14,7 @@ import axios from "axios";
 export const getStaticProps = async () => {
   const apiUrl =
     process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_API_URL
+      ? `https://${process.env.NEXT_PUBLIC_API_URL}`
       : "http://127.0.0.1:3000";
 
   // fetch reviews
