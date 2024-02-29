@@ -1,3 +1,5 @@
+'use client'
+
 import type { AppProps } from "next/app";
 import { Box } from "@mui/system";
 import dynamic from "next/dynamic";

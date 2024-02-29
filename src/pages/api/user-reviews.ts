@@ -1,3 +1,5 @@
+'use client'
+
 import { authSupabase, supabase } from "@/lib/supabase";
 
 export default async function userReviews(req: any, res: any) {

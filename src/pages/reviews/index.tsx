@@ -1,22 +1,26 @@
+'use client'
+
 import type { InferGetStaticPropsType } from "next";
-import { Card, CardContent, Typography, Box } from "@mui/material";
+import { Typography } from "@mui/material";
 import Head from "next/head";
 import ReviewCard from "@/components/ReviewCard";
 import { supabase } from "@/lib/supabase";
 import { Review } from "@/models/review";
 import { Course } from "@/models/course";
 import SpeedDialTooltipOpen from "@/components/SpeedDial";
+import axios from "axios";
 
 // fetch reviews and courses at build time
 export const getStaticProps = async () => {
-  let apiUrl =
+  const apiUrl =
     process.env.NODE_ENV === "production"
       ? process.env.NEXT_PUBLIC_API_URL
-      : "http://localhost:3000";
+      : "http://127.0.0.1:3000";
 
   // fetch reviews
-  const resReviews = await fetch(`${apiUrl}/api/reviews`);
-  const reviews: Review[] = await resReviews.json();
+  const resReviews = await axios(`${apiUrl}/api/reviews`);
+
+  const reviews: Review[] = await resReviews.data;
 
   // fetch courses
   const { data: courses, error } = await supabase.from("Courses").select("*");

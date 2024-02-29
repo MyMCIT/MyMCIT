@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
@@ -21,6 +23,7 @@ import { GetStaticProps } from "next";
 import { Course } from "@/models/course";
 import { Review } from "@/models/review";
 import { track } from "@vercel/analytics";
+import axios from "axios";
 
 export const getStaticProps: GetStaticProps = async () => {
   let apiUrl;
@@ -28,10 +31,10 @@ export const getStaticProps: GetStaticProps = async () => {
   if (process.env.NODE_ENV === "production") {
     apiUrl = process.env.NEXT_PUBLIC_API_URL;
   } else {
-    apiUrl = "http://localhost:3000";
+    apiUrl = "http://127.0.0.1:3000";
   }
-  const res = await fetch(`${apiUrl}/api/courses`);
-  const courses = await res.json();
+  const res = await axios(`${apiUrl}/api/courses`);
+  const courses = await res.data;
 
   // sort the courses in alphabetical order
   const sortedCourses: Course[] = courses.sort(
@@ -65,8 +68,8 @@ export default function EditReview({ courses }: any) {
   // pre-fill the form with the review data fetched from API
   useEffect(() => {
     if (id) {
-      fetch(`/api/get-review?id=${id}`)
-        .then((res) => res.json())
+      axios(`/api/get-review?id=${id}`)
+        .then((res) => res.data)
         .then((data: Review) => {
           setCourse(data.course);
           setCourseId(data.course.id.toString());
@@ -98,13 +101,18 @@ export default function EditReview({ courses }: any) {
     // analytics capture the API call
     track("Update-Review-Submitted");
 
-    const response = await fetch("/api/update-review", {
+    const apiUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_API_URL
+        : "http://127.0.0.1:3000";
+
+    const response = await axios(`${apiUrl}/api/update-review`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionData.session?.access_token}`,
       },
-      body: JSON.stringify({
+      data: JSON.stringify({
         id: +id!,
         course_id: course?.id,
         course_code: course?.course_code,
@@ -118,7 +126,7 @@ export default function EditReview({ courses }: any) {
 
     setIsSubmitting(false);
 
-    if (response.ok) {
+    if (response.status === 200) {
       track("Update-Review-Success");
       setOpenSnackbar(true);
       setTimeout(() => router.push("/reviews/my-reviews"), 2000);

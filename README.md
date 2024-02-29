@@ -63,7 +63,7 @@ In the context of MyMCIT, a web application for students to read and write revie
     ```bash
     npm run dev
     ```
-   This starts the application on `http://localhost:3000`.
+   This starts the application on `http://127.0.0.1:3000`.
 
 ### Production
 

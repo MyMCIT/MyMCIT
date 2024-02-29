@@ -1,3 +1,5 @@
+'use client'
+
 import { supabase } from "../../lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Course } from "@/models/course";
