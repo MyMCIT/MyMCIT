@@ -12,44 +12,55 @@ import axios from "axios";
 
 // fetch reviews and courses at build time
 export const getStaticProps = async () => {
-  const apiUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_API_URL
-      : "http://127.0.0.1:3000";
+  try {
+    const apiUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_API_URL
+        : "http://127.0.0.1:3000";
 
-  // fetch reviews
-  const resReviews = await axios(`${apiUrl}/api/reviews`);
+    // fetch reviews
+    const resReviews = await axios(`${apiUrl}/api/reviews`);
 
-  const reviews: Review[] = await resReviews.data;
+    const reviews: Review[] = await resReviews.data;
 
-  // fetch courses
-  const { data: courses, error } = await supabase.from("Courses").select("*");
+    // fetch courses
+    const {data: courses, error} = await supabase.from("Courses").select("*");
 
-  if (error) {
-    console.error("Error fetching courses from Supabase:", error.message);
-    throw error;
+    if (error) {
+      console.error("Error fetching courses from Supabase:", error.message);
+      throw error;
+    }
+
+    // create course lookup object
+    const courseMap = courses.reduce(
+      (acc, course) => {
+        acc[course.id] = course;
+        return acc;
+      },
+      {} as { [key: string]: Course },
+    );
+
+    // attach course data to each review
+    reviews.forEach((review) => {
+      review.course = courseMap[review.course_id];
+    });
+
+    return {
+      props: {
+        reviews,
+      },
+      revalidate: 86400,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching reviews:", error.message);
+      return {
+        props: {
+          reviews: [],
+        },
+      };
+    }
   }
-
-  // create course lookup object
-  const courseMap = courses.reduce(
-    (acc, course) => {
-      acc[course.id] = course;
-      return acc;
-    },
-    {} as { [key: string]: Course },
-  );
-
-  // attach course data to each review
-  reviews.forEach((review) => {
-    review.course = courseMap[review.course_id];
-  });
-
-  return {
-    props: {
-      reviews,
-    },
-    revalidate: 86400,
-  };
 };
 
 export default function ReviewsPage({

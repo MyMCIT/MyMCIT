@@ -26,27 +26,38 @@ import { track } from "@vercel/analytics";
 import axios from "axios";
 
 export const getStaticProps: GetStaticProps = async () => {
-  let apiUrl;
+  try {
+    let apiUrl;
 
-  if (process.env.NODE_ENV === "production") {
-    apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  } else {
-    apiUrl = "http://127.0.0.1:3000";
+    if (process.env.NODE_ENV === "production") {
+      apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    } else {
+      apiUrl = "http://127.0.0.1:3000";
+    }
+    const res = await axios(`${apiUrl}/api/courses`);
+    const courses = await res.data;
+
+    // sort the courses in alphabetical order
+    const sortedCourses: Course[] = courses.sort(
+      (a: { course_code: string }, b: { course_code: string }) =>
+        a.course_code.localeCompare(b.course_code),
+    );
+
+    return {
+      props: {
+        courses: sortedCourses,
+      },
+      revalidate: 86400,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching courses:", error.message);
+    }
   }
-  const res = await axios(`${apiUrl}/api/courses`);
-  const courses = await res.data;
-
-  // sort the courses in alphabetical order
-  const sortedCourses: Course[] = courses.sort(
-    (a: { course_code: string }, b: { course_code: string }) =>
-      a.course_code.localeCompare(b.course_code),
-  );
-
   return {
     props: {
-      courses: sortedCourses,
+      courses: [],
     },
-    revalidate: 86400,
   };
 };
 

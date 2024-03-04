@@ -21,40 +21,45 @@ export default function MyReviews() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchReviews = async () => {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session) {
-        console.log("No session found");
-        setOpenSnackbar(true);
-        // wait  before redirecting to give the user time to read the message
-        setTimeout(() => {
-          router.push("/");
-        }, 5000);
+    try {
+      const fetchReviews = async () => {
+        const {data: session} = await supabase.auth.getSession();
+        if (!session?.session) {
+          console.log("No session found");
+          setOpenSnackbar(true);
+          // wait  before redirecting to give the user time to read the message
+          setTimeout(() => {
+            router.push("/");
+          }, 5000);
 
-        return;
+          return;
+        }
+        const apiUrl =
+          process.env.NODE_ENV === "production"
+            ? `https://${process.env.NEXT_PUBLIC_API_URL}`
+            : "http://127.0.0.1:3000";
+
+        const response = await axios(`${apiUrl}/api/user-reviews`, {
+          headers: {
+            Authorization: `Bearer ${session.session.access_token}`,
+          },
+        })
+
+        if (response.status !== 200) {
+          console.error("Failed to fetch reviews");
+          return;
+        }
+
+        const data = await response.data;
+        setReviews(data.reviews);
+      };
+
+      fetchReviews();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Failed to fetch reviews:", error.message);
       }
-
-      const apiUrl =
-        process.env.NODE_ENV === "production"
-          ? `https://${process.env.NEXT_PUBLIC_API_URL}`
-          : "http://127.0.0.1:3000";
-
-      const response = await axios(`${apiUrl}/api/user-reviews`, {
-        headers: {
-          Authorization: `Bearer ${session.session.access_token}`,
-        },
-      })
-
-      if (response.status !== 200) {
-        console.error("Failed to fetch reviews");
-        return;
-      }
-
-      const data = await response.data;
-      setReviews(data.reviews);
-    };
-
-    fetchReviews();
+    }
   }, [router]);
 
   const handleCloseSnackbar = (event: any, reason: string) => {

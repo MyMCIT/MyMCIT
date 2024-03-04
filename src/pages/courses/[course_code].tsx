@@ -59,13 +59,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ course_code: string }>,
 ) => {
-  const { course_code } = context.params as { course_code: string };
-  let apiUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_API_URL
-      : "http://127.0.0.1:3000";
-
   try {
+    const { course_code } = context.params as { course_code: string };
+    let apiUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_API_URL
+        : "http://127.0.0.1:3000";
+
     // fetch course data
     const resCourse = await axios(
       `${apiUrl}/api/courses?course_code=${course_code}`,

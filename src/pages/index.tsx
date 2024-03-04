@@ -28,22 +28,34 @@ import axios from "axios";
 export const getStaticProps: GetStaticProps<{
   courseSummaries: CourseReviewSummary[];
 }> = async () => {
-  let apiUrl;
+  try {
+    let apiUrl;
 
-  if (process.env.NODE_ENV === "production") {
-    apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  } else {
-    apiUrl = "http://127.0.0.1:3000";
+    if (process.env.NODE_ENV === "production") {
+      apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    } else {
+      apiUrl = "http://127.0.0.1:3000";
+    }
+
+    const res = await axios(`${apiUrl}/api/course-summaries`);
+    const courseSummaries: CourseReviewSummary[] = await res.data;
+
+    return {
+      props: {courseSummaries},
+      revalidate: 86400,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching course summaries:", error.message);
+    }
   }
-
-  const res = await axios(`${apiUrl}/api/course-summaries`);
-  const courseSummaries: CourseReviewSummary[] = await res.data;
-
   return {
-    props: { courseSummaries },
-    revalidate: 86400,
+    props: {
+      courseSummaries: [],
+    },
   };
 };
+
 export default function Home({
   courseSummaries,
 }: InferGetStaticPropsType<typeof getStaticProps>) {

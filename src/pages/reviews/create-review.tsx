@@ -1,6 +1,6 @@
 'use client'
 
-import { SyntheticEvent, useEffect, useState } from "react";
+import {SyntheticEvent, useCallback, useEffect, useState} from "react";
 import {
   Alert,
   Box,
@@ -25,27 +25,38 @@ import { track } from "@vercel/analytics";
 import axios from "axios";
 
 export const getStaticProps: GetStaticProps = async () => {
-  let apiUrl;
+  try {
+    let apiUrl;
 
-  if (process.env.NODE_ENV === "production") {
-    apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  } else {
-    apiUrl = "http://127.0.0.1:3000";
+    if (process.env.NODE_ENV === "production") {
+      apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    } else {
+      apiUrl = "http://127.0.0.1:3000";
+    }
+    const res = await axios(`${apiUrl}/api/courses`);
+    const courses = await res.data;
+
+    // sort the courses in alphabetical order
+    const sortedCourses: Course[] = courses.sort(
+      (a: { course_code: string }, b: { course_code: string }) =>
+        a.course_code.localeCompare(b.course_code),
+    );
+
+    return {
+      props: {
+        courses: sortedCourses,
+      },
+      revalidate: 86400,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error fetching courses:", error.message);
+    }
   }
-  const res = await axios(`${apiUrl}/api/courses`);
-  const courses = await res.data;
-
-  // sort the courses in alphabetical order
-  const sortedCourses: Course[] = courses.sort(
-    (a: { course_code: string }, b: { course_code: string }) =>
-      a.course_code.localeCompare(b.course_code),
-  );
-
   return {
     props: {
-      courses: sortedCourses,
+      courses: [],
     },
-    revalidate: 86400,
   };
 };
 
@@ -73,59 +84,66 @@ export default function CreateReview({ courses }: any) {
   }, [router]);
 
   // submits review
-  const handleSubmit = async (e: { preventDefault: () => void }) => {
+  const handleSubmit = useCallback(async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    const { data: sessionData } = await supabase.auth.getSession();
+    try {
+      setIsSubmitting(true);
 
-    // check if there's an active session
-    if (!sessionData?.session) {
-      track("Create-Review-Unauthorized-User");
-      router.push("/"); // redirect to "/" if no active session
+      const {data: sessionData} = await supabase.auth.getSession();
+
+      // check if there's an active session
+      if (!sessionData?.session) {
+        track("Create-Review-Unauthorized-User");
+        router.push("/"); // redirect to "/" if no active session
+        setIsSubmitting(false);
+        return;
+      }
+
+      let apiUrl;
+
+      if (process.env.NODE_ENV === "production") {
+        apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      } else {
+        apiUrl = "http://127.0.0.1:3000";
+      }
+
+      const response = await axios(`${apiUrl}/api/create-review`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionData.session?.access_token}`,
+        },
+        data: JSON.stringify({
+          course_id: course?.id,
+          course_code: course?.course_code,
+          semester: semester,
+          difficulty: difficulty,
+          workload: workload + " hrs/wk",
+          rating: rating,
+          comment: review,
+        }),
+      });
+
       setIsSubmitting(false);
-      return;
+      const data = await response.data;
+
+      if (response.status !== 200) {
+        track("Create-Review-Failed");
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      track("Create-Review-Success");
+
+      setOpenSnackbar(true);
+      await router.push("/");
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error submitting review:", error.message);
+      }
     }
+  }, [course, difficulty, rating, review, router, semester, workload]);
 
-    let apiUrl;
-
-    if (process.env.NODE_ENV === "production") {
-      apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    } else {
-      apiUrl = "http://127.0.0.1:3000";
-    }
-
-    const response = await axios(`${apiUrl}/api/create-review`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionData.session?.access_token}`,
-      },
-      data: JSON.stringify({
-        course_id: course?.id,
-        course_code: course?.course_code,
-        semester: semester,
-        difficulty: difficulty,
-        workload: workload + " hrs/wk",
-        rating: rating,
-        comment: review,
-      }),
-    });
-
-    setIsSubmitting(false);
-    const data = await response.data;
-
-    if (response.status !== 200) {
-      track("Create-Review-Failed");
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    track("Create-Review-Success");
-
-    setOpenSnackbar(true);
-    await router.push("/");
-  };
-
-  const handleCloseSnackbar = (
+  const handleCloseSnackbar = useCallback((
     event?: SyntheticEvent<Element, Event> | Event,
     reason?: string,
   ) => {
@@ -134,7 +152,7 @@ export default function CreateReview({ courses }: any) {
     }
 
     setOpenSnackbar(false);
-  };
+  }, [setOpenSnackbar]);
 
   const difficultyLevels = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard"];
   const ratings = [
