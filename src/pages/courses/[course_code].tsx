@@ -124,7 +124,9 @@ export const getStaticProps = async (
     };
 
   } catch (error) {
-    console.error("Error fetching course data:", error);
+    if (error instanceof Error) {
+      console.error("Error fetching courses:", error.message);
+    }
     return { notFound: true };
   }
 };

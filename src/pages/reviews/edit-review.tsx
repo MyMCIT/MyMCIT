@@ -53,12 +53,12 @@ export const getStaticProps: GetStaticProps = async () => {
     if (error instanceof Error) {
       console.error("Error fetching courses:", error.message);
     }
+    return {
+      props: {
+        courses: [],
+      },
+    };
   }
-  return {
-    props: {
-      courses: [],
-    },
-  };
 };
 
 export default function EditReview({ courses }: any) {

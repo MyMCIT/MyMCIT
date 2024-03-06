@@ -54,12 +54,12 @@ export const getStaticProps = async () => {
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching reviews:", error.message);
-      return {
-        props: {
-          reviews: [],
-        },
-      };
     }
+    return {
+      props: {
+        reviews: [],
+      },
+    };
   }
 };
 
