@@ -2,6 +2,8 @@
 
 This guide walks you through setting up a local Supabase database for the MyMCIT project, including database seeding and authentication setup.
 
+Running into any issues? Refer to the [Troubleshooting](#troubleshooting) section at the end of this document.
+
 ## Prerequisites
 
 - Install the Supabase CLI. For macOS, use `brew install supabase/tap/supabase`. See the [Supabase CLI documentation](https://supabase.com/docs/guides/cli/getting-started) for installation instructions on other operating systems.
@@ -67,3 +69,17 @@ NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
 This setup ensures your local environment is correctly configured to work with Supabase and Google OAuth authentication. For more information on setting your On-Demand ISR token, see the [ISR Vercel Documentation](https://nextjs.org/docs/pages/building-your-application/data-fetching/incremental-static-regeneration).
 
 Feel free to reach out if you need any help setting this up. Happy coding!
+
+## Troubleshooting
+
+### Docker/Supabase Issues
+
+If you encounter an issue when running `supabase start`, try the following:  
+
+1. On your Docker Desktop, go to the 'Settings' section
+2. Navigate to the 'Choose file sharing implementation for your containers' setting
+3. Select the 'gRPC FUSE' option
+4. Disable 'Use Virtualization framework' if it's previously enabled
+5. Restart Docker Desktop and re-run `supabase start`
+
+Note: This is a known bug with Docker/Supabase and may be fixed in future updates. Please refer to this [GitHub thread](https://github.com/supabase/cli/issues/1083#issuecomment-1691431279) for more information. Learn more about the [Docker Desktop settings](https://docs.docker.com/desktop/settings/mac/).
