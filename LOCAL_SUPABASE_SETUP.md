@@ -16,11 +16,13 @@ Running into any issues? Refer to the [Troubleshooting](#troubleshooting) sectio
 2. Open a terminal and run `supabase init` to initialize your local Supabase project at the root.
 3. Start the local Supabase instance by running `supabase start` at the root to start pulling the necessary images from supabase/postgres via Docker.
 4. You'll need to import the database schema, roles, and data. These are provided in the `.sql` files: `schema.sql`, `roles.sql`, and `data.sql`. Run the following commands in your project terminal, using the password `postgres` each time you are prompted:
+
     ```shell
     psql -h localhost -p 54322 -U postgres -d postgres -f schema.sql
     psql -h localhost -p 54322 -U postgres -d postgres -f roles.sql
     psql -h localhost -p 54322 -U postgres -d postgres -f data.sql
     ```
+
 5. Once done, your local Docker Supabase database will be populated with the schema, roles, and data. Run `npm run dev` to start your project.
 
 **Note:** This setup creates an isolated local database. Users without Supabase production environment variables will not interact with the production database.
@@ -31,6 +33,7 @@ To set up authentication with Google OAuth, follow these steps:
 
 1. Locate the `supabase/config.toml` file in your project directory.
 2. Update the `# Use an external OAuth provider` section with the following details:
+
     ```toml
     [auth.external.google]
     enabled = true
@@ -38,12 +41,15 @@ To set up authentication with Google OAuth, follow these steps:
     secret = "env(GOOGLE_CLIENT_SECRET)"
     redirect_uri = "http://localhost:54321/auth/v1/callback"
     ```
+
 3. Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to your local `.env` file. These values can be obtained from the Google Cloud console. You can ask the MOSA team to provide you with the values. If the MOSA team cannot provide values to you due to MOSA procedures, don't worry: follow these instructions to set up your own Google OAuth setup for local testing: [Google Cloud OAuth Setup](https://support.google.com/cloud/answer/6158849?hl=en#zippy=%2Cpublic-and-internal-applications%2Cstep-configure-your-app-to-use-the-new-secret%2Cstep-create-a-new-client-secret).
 
 4. Update your `config.toml` file, including the following URLs in the `additional_redirect_urls` field to permit post-authentication redirects:
+
     ```toml
     additional_redirect_urls = ["https://localhost:3000", "http://localhost:54321"]
     ```
+
 5. Run `supabase stop && supabase start` to restart your local Supabase instance in order to use the updated configs.
 
 This configuration allows you to use Google OAuth locally with Supabase's built-in authentication table.
@@ -62,6 +68,7 @@ GOOGLE_CLIENT_SECRET=<from Google Cloud settings>
 ```
 
 In case the above `NEXT_PUBLIC_SUPABASE_URL` does not work, try instead:
+
 ```plaintext
 NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
 ```
