@@ -47,20 +47,20 @@ This configuration allows you to use Google OAuth locally with Supabase's built-
 
 ## .env Local File Setup
 
-Here is an example of what your `.env` file should contain for local development:
+Here is an example of what your `.env` file should contain for local development. 
 
 ```plaintext
-NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key from the local Supabase start console log>
+NEXT_PUBLIC_SUPABASE_LOCAL_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_LOCAL_ANON_KEY=<anon key from the local Supabase start console log>
 ON_DEMAND_ISR_TOKEN=<whatever secret you want to come up with>
 POSTGRES_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
 GOOGLE_CLIENT_ID=<from Google Cloud settings>
 GOOGLE_CLIENT_SECRET=<from Google Cloud settings>
 ```
 
-In case the above `NEXT_PUBLIC_SUPABASE_URL` does not work, try instead:
+In case the above `NEXT_PUBLIC_SUPABASE_LOCAL_URL` does not work, try instead:
 ```plaintext
-NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+NEXT_PUBLIC_SUPABASE_LOCAL_URL=http://localhost:54321
 ```
 
 This setup ensures your local environment is correctly configured to work with Supabase and Google OAuth authentication. For more information on setting your On-Demand ISR token, see the [ISR Vercel Documentation](https://nextjs.org/docs/pages/building-your-application/data-fetching/incremental-static-regeneration).
