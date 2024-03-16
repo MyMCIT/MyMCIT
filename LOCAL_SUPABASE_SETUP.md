@@ -6,6 +6,7 @@ This guide walks you through setting up a local Supabase database for the MyMCIT
 
 - Install the Supabase CLI. For macOS, use `brew install supabase/tap/supabase`. See the [Supabase CLI documentation](https://supabase.com/docs/guides/cli/getting-started) for installation instructions on other operating systems.
 - Install Docker from [Docker's official website](https://docs.docker.com/get-docker/) if it's not already installed on your machine.
+- Install PostgreSQL. For macOS, use `brew install postgresql`. See the [PostgreSQL documentation](https://www.postgresql.org/download/) for installation instructions on other operating systems.
 
 ## Setting Up Your Local Database
 
