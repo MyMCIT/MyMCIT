@@ -17,7 +17,7 @@ import {
   Brightness4,
   Brightness7,
 } from "@mui/icons-material";
-import { User, AuthSession } from "@supabase/supabase-js";
+import {User, AuthSession, Session} from "@supabase/supabase-js";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -57,9 +57,19 @@ function UserComponent() {
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event: string, session: AuthSession | null) => {
-        setUser(session?.user ?? null);
-      },
+        async (event: string, session: Session | null) => {
+          let user = session?.user ?? null;
+
+          // if the user is not null and the email does not end with seas.upenn.edu, don't let the user sign in
+          if (user && !user.email?.endsWith('@seas.upenn.edu')) {
+            track("Non-SEAS-User-Login-Attempt");   // log the event for analytics
+            await supabase.auth.signOut(); // sign out the user
+            user = null; // set the user to null
+            router.push('/');               // kick the user to '/' route
+          }
+
+          setUser(user);
+        },
     );
 
     return () => {
