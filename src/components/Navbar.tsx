@@ -10,17 +10,10 @@ import {
   useMediaQuery,
   useTheme,
   Hidden,
-  Alert,
   Snackbar,
-  SnackbarCloseReason,
 } from "@mui/material";
-import {
-  AccountCircle,
-  Brightness3,
-  Brightness4,
-  Brightness7,
-} from "@mui/icons-material";
-import { User, AuthSession, Session } from "@supabase/supabase-js";
+import { AccountCircle, Brightness3, Brightness7 } from "@mui/icons-material";
+import { User, Session } from "@supabase/supabase-js";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -84,7 +77,7 @@ function UserComponent({
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [router, setEmailError]);
 
   if (user) {
     return (
