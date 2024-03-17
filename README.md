@@ -34,7 +34,7 @@ In the context of MyMCIT, a web application for students to read and write revie
 
 ### Prerequisites
 
-- Node.js installed (LTS version recommended), preferably with `nvm` the [Node Version Manager](https://github.com/nvm-sh/nvm). The initial version was built with `LTS/hydrogen` (`v18`).
+- Node.js (version 18.17 or later) installed (LTS version recommended), preferably with `nvm` the [Node Version Manager](https://github.com/nvm-sh/nvm). The initial version was built with `LTS/hydrogen` (`v18`).
 - Login credentials to the Supabase account with the project DB.
 - Google Cloud Platform account for setting up OAuth.
 
