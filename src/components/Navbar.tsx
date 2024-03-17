@@ -10,14 +10,10 @@ import {
   useMediaQuery,
   useTheme,
   Hidden,
+  Snackbar,
 } from "@mui/material";
-import {
-  AccountCircle,
-  Brightness3,
-  Brightness4,
-  Brightness7,
-} from "@mui/icons-material";
-import { User, AuthSession } from "@supabase/supabase-js";
+import { AccountCircle, Brightness3, Brightness7 } from "@mui/icons-material";
+import { User, Session } from "@supabase/supabase-js";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -34,7 +30,11 @@ const StyledLink = styled(Link)`
   }
 `;
 
-function UserComponent() {
+function UserComponent({
+  setEmailError,
+}: {
+  setEmailError: (open: boolean) => void;
+}) {
   const router = useRouter();
 
   const handleUserNavigation = (path: string) => {
@@ -57,15 +57,27 @@ function UserComponent() {
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event: string, session: AuthSession | null) => {
-        setUser(session?.user ?? null);
+      async (event: string, session: Session | null) => {
+        let user = session?.user ?? null;
+
+        // if the user is not null and the email does not end with seas.upenn.edu, don't let the user sign in
+        if (user && !user.email?.endsWith("@seas.upenn.edu")) {
+          track("Non-SEAS-User-Login-Attempt"); // log the event for analytics
+          await supabase.auth.signOut(); // sign out the user
+          user = null; // set the user to null
+          router.push("/"); // kick the user to '/' route
+          // display a toast to the user that they need to use their SEAS email
+          setEmailError(true);
+        }
+
+        setUser(user);
       },
     );
 
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [router, setEmailError]);
 
   if (user) {
     return (
@@ -163,6 +175,8 @@ function UserComponent() {
 export default function Navbar({ themeMode, setThemeMode }: any) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [emailError, setEmailError] = useState(false);
+
   function handleThemeChange() {
     track("ThemeChange");
     setThemeMode((prev: string) => (prev === "light" ? "dark" : "light"));
@@ -222,9 +236,15 @@ export default function Navbar({ themeMode, setThemeMode }: any) {
           <IconButton color="inherit" onClick={handleThemeChange}>
             {themeMode === "light" ? <Brightness7 /> : <Brightness3 />}
           </IconButton>
-          <UserComponent />
+          <UserComponent setEmailError={setEmailError} />
         </div>
       </Toolbar>
+      <Snackbar
+        open={emailError}
+        autoHideDuration={6000}
+        onClose={() => setEmailError(false)}
+        message="Login failed. Please use your SEAS Penn email."
+      />
     </AppBar>
   );
 }
