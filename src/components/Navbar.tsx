@@ -160,6 +160,9 @@ function UserComponent({
           .signInWithOAuth({
             provider: "google",
             options: {
+              queryParams: {
+                hd: "seas.upenn.edu", // only allow UPenn SEAS emails
+              },
               redirectTo: `${baseUrl}`, // redirect to route after OAuth complete
             },
           })
