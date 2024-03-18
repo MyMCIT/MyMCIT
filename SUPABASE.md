@@ -26,8 +26,8 @@ With the Supabase credentials at hand, you'll need to add them to the MyMCIT app
 2. Add the following lines to the `.env.local` file, replacing `<YOUR_SUPABASE_URL>` and `<YOUR_SUPABASE_ANON_KEY>` with your actual Supabase credentials:
 
    ```env
-   NEXT_PUBLIC_SUPABASE_URL=<YOUR_SUPABASE_URL>
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=<YOUR_SUPABASE_ANON_KEY>
+   NEXT_PUBLIC_SUPABASE_LOCAL_URL=<YOUR_SUPABASE_URL>
+   NEXT_PUBLIC_SUPABASE_LOCAL_ANON_KEY=<YOUR_SUPABASE_ANON_KEY>
    ```
 
 ### Security Note

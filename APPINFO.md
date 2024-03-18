@@ -70,8 +70,8 @@ The `lib` folder is where you can add utility functions. This is mostly importan
 ```ts
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_LOCAL_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_LOCAL_ANON_KEY!;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const authSupabase = (authHeader: string) => {
