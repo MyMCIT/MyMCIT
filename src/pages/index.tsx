@@ -80,12 +80,12 @@ export default function Home({
   const router = useRouter();
 
   const coreCourses = [
-    "CIT-591",
-    "CIT-592",
-    "CIT-593",
-    "CIT-594",
-    "CIT-595",
-    "CIT-596",
+    "CIT-5910",
+    "CIT-5920",
+    "CIT-5930",
+    "CIT-5940",
+    "CIT-5950",
+    "CIT-5960",
   ];
 
   // filters for course types
