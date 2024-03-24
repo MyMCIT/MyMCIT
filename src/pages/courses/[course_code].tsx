@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import type { InferGetStaticPropsType, GetStaticPropsContext } from "next";
 import {
@@ -7,6 +7,12 @@ import {
   Paper,
   Box,
   ChipPropsColorOverrides,
+  FormControl,
+  InputLabel,
+  Select,
+  OutlinedInput,
+  Chip,
+  MenuItem,
 } from "@mui/material";
 import { GetStaticPaths } from "next";
 import { supabase } from "@/lib/supabase";
@@ -17,7 +23,6 @@ import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
 import { Session } from "@supabase/supabase-js";
-import { isCurrentUserReview } from "@/lib/userUtils";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import axios from "axios";
@@ -107,11 +112,14 @@ export const getStaticProps = async (
           : 0;
       };
 
-      const semesterDiff = parseSemester(b.semester) - parseSemester(a.semester);
+      const semesterDiff =
+        parseSemester(b.semester) - parseSemester(a.semester);
 
       if (semesterDiff !== 0) return semesterDiff;
 
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     });
 
     return {
@@ -122,7 +130,6 @@ export const getStaticProps = async (
       },
       revalidate: 86400,
     };
-
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching courses:", error.message);
@@ -171,6 +178,14 @@ export default function CourseReviews({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // state to manage selected semester(s) filter
+  const [selectedSemesters, setSelectedSemesters] = useState<string[]>([]);
+
+  // array to hold all the semesters
+  const allSemesters: string[] = [
+    ...new Set(reviews.map((review) => review.semester)),
+  ];
+
   if (!reviews.length) {
     return (
       <Typography variant="h6" align="center" mt={5}>
@@ -178,6 +193,21 @@ export default function CourseReviews({
       </Typography>
     );
   }
+
+  // handles state changes for the semester filter dropdown
+  const handleSemesterChange = (event: { target: { value: any } }) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedSemesters(typeof value === "string" ? value.split(",") : value);
+  };
+
+  // filter displayed reviews based on selected semester(s) in the dropdown
+  const filteredReviews = reviews.filter(
+    (review: Review) =>
+      selectedSemesters.length === 0 ||
+      selectedSemesters.includes(review.semester),
+  );
 
   const handleDelete = async (reviewId: number, courseCode: string) => {
     setIsSubmitting(true);
@@ -253,7 +283,33 @@ export default function CourseReviews({
         </Grid>
       </Paper>
 
-      {reviews.map((review, index) => (
+      <Box sx={{ maxWidth: 800, margin: "auto" }}>
+        <FormControl sx={{ m: 1, width: 300 }}>
+          <InputLabel id="semester-select-label">Semester</InputLabel>
+          <Select
+            labelId="semester-select-label"
+            multiple
+            value={selectedSemesters}
+            onChange={handleSemesterChange}
+            input={<OutlinedInput id="select-multiple-chip" label="Semester" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {selected.map((value) => (
+                  <Chip key={value} label={value} />
+                ))}
+              </Box>
+            )}
+          >
+            {allSemesters.map((semester) => (
+              <MenuItem key={semester} value={semester}>
+                {semester}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      {filteredReviews.map((review, index) => (
         <ReviewCard review={review} key={review.id} course={course} />
       ))}
 
