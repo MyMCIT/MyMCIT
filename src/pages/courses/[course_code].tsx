@@ -181,10 +181,16 @@ export default function CourseReviews({
   // state to manage selected semester(s) filter
   const [selectedSemesters, setSelectedSemesters] = useState<string[]>([]);
 
+  // state to manage the reviews by positive/negative sentiment
+  const [selectedSentiments, setSelectedSentiments] = useState<string[]>([]);
+
   // array to hold all the semesters
   const allSemesters: string[] = [
     ...new Set(reviews.map((review) => review.semester)),
   ];
+
+  // sentiment options
+  const sentimentOptions = ["Positive", "Negative"];
 
   if (!reviews.length) {
     return (
@@ -202,11 +208,25 @@ export default function CourseReviews({
     setSelectedSemesters(typeof value === "string" ? value.split(",") : value);
   };
 
-  // filter displayed reviews based on selected semester(s) in the dropdown
+  // handles state changes for reviews sentiment
+  const handleSentimentChange = (event: { target: { value: any } }) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedSentiments(typeof value === "string" ? value.split(",") : value);
+  };
+
+  // filter displayed reviews based on selected filters(s) in the dropdowns
   const filteredReviews = reviews.filter(
     (review: Review) =>
-      selectedSemesters.length === 0 ||
-      selectedSemesters.includes(review.semester),
+      (selectedSemesters.length === 0 ||
+        selectedSemesters.includes(review.semester)) &&
+      (selectedSentiments.length === 0 ||
+        (selectedSentiments.includes("Positive") &&
+          (review.rating === "Liked" || review.rating === "Strongly Liked")) ||
+        (selectedSentiments.includes("Negative") &&
+          (review.rating === "Disliked" ||
+            review.rating === "Strongly Disliked"))),
   );
 
   const handleDelete = async (reviewId: number, courseCode: string) => {
@@ -283,7 +303,15 @@ export default function CourseReviews({
         </Grid>
       </Paper>
 
-      <Box sx={{ maxWidth: 800, margin: "auto" }}>
+      <Box
+        sx={{
+          maxWidth: 800,
+          margin: "auto",
+          padding: 2,
+          display: "flex",
+          gap: 2,
+        }}
+      >
         <FormControl sx={{ m: 1, width: 300 }}>
           <InputLabel id="semester-select-label">Semester</InputLabel>
           <Select
@@ -303,6 +331,31 @@ export default function CourseReviews({
             {allSemesters.map((semester) => (
               <MenuItem key={semester} value={semester}>
                 {semester}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ m: 1, width: 300 }}>
+          <InputLabel id="sentiment-select-label">Sentiment</InputLabel>
+          <Select
+            labelId="sentiment-select-label"
+            multiple
+            value={selectedSentiments}
+            onChange={handleSentimentChange}
+            input={
+              <OutlinedInput id="select-multiple-chip" label="Sentiment" />
+            }
+            renderValue={(selected) => (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                {selected.map((value) => (
+                  <Chip key={value} label={value} />
+                ))}
+              </Box>
+            )}
+          >
+            {sentimentOptions.map((sentiment) => (
+              <MenuItem key={sentiment} value={sentiment}>
+                {sentiment}
               </MenuItem>
             ))}
           </Select>
