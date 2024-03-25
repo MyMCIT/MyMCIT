@@ -88,6 +88,7 @@ export const getStaticProps = async (
     const resSummary = await axios(
       `${apiUrl}/api/course-summaries?course_code=${course_code}`,
     );
+
     const courseSummary: CourseReviewSummary[] = await resSummary.data;
 
     // fetch course reviews
@@ -263,7 +264,11 @@ export default function CourseReviews({
     window.location.reload();
   };
 
-  const summary = courseSummary[0];
+  // fetch the course summary for the current course
+  const summary =
+    courseSummary.find(
+      (summary) => summary.course_code === course.course_code,
+    ) || null;
 
   const sections = [
     { label: "Total Reviews", key: "totalReviews" },
@@ -282,26 +287,32 @@ export default function CourseReviews({
         Reviews for {course.course_code}: {course.course_name}
       </Typography>
 
-      <Paper sx={{ maxWidth: 800, margin: "30px auto", padding: 2 }}>
-        <Grid container spacing={2}>
-          {sections.map(({ label, key }) => (
-            <Grid item key={key} xs={6} sm={3}>
-              <Box textAlign="center">
-                <Typography variant="subtitle1" color="textSecondary">
-                  {label}
-                </Typography>
-                <Typography variant="h6">
-                  {typeof summary[key] === "number"
-                    ? (summary[key] as number) % 1 === 0
-                      ? summary[key]
-                      : (summary[key] as number).toFixed(2)
-                    : summary[key]}
-                </Typography>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </Paper>
+      {summary ? (
+        <Paper sx={{ maxWidth: 800, margin: "30px auto", padding: 2 }}>
+          <Grid container spacing={2}>
+            {sections.map(({ label, key }) => (
+              <Grid item key={key} xs={6} sm={3}>
+                <Box textAlign="center">
+                  <Typography variant="subtitle1" color="textSecondary">
+                    {label}
+                  </Typography>
+                  <Typography variant="h6">
+                    {typeof summary[key] === "number"
+                      ? (summary[key] as number) % 1 === 0
+                        ? summary[key]
+                        : (summary[key] as number).toFixed(2)
+                      : "N/A"}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </Paper>
+      ) : (
+        <Typography variant="h6" align="center" mt={5}>
+          No summary data is available for this course.
+        </Typography>
+      )}
 
       <Box
         sx={{
