@@ -13,6 +13,7 @@ import {
   OutlinedInput,
   Chip,
   MenuItem,
+  Button,
 } from "@mui/material";
 import { GetStaticPaths } from "next";
 import { supabase } from "@/lib/supabase";
@@ -233,6 +234,12 @@ export default function CourseReviews({
     setSelectedSentiments(typeof value === "string" ? value.split(",") : value);
   };
 
+  // clears out all the filters if user clicks on Reset button
+  const handleResetFilters = () => {
+    setSelectedSemesters([]);
+    setSelectedSentiments([]);
+  };
+
   // determine if any filters are applied by the user
   const isFilterApplied =
     selectedSemesters.length > 0 || selectedSentiments.length > 0;
@@ -399,6 +406,7 @@ export default function CourseReviews({
           padding: 2,
           display: "flex",
           gap: 2,
+          alignItems: "center",
         }}
       >
         <FormControl sx={{ m: 1, width: 300 }}>
@@ -449,6 +457,9 @@ export default function CourseReviews({
             ))}
           </Select>
         </FormControl>
+        <Button variant="outlined" onClick={handleResetFilters}>
+          Reset
+        </Button>
       </Box>
 
       {filteredReviews.map((review, index) => (
