@@ -139,6 +139,22 @@ export const getStaticProps = async (
   }
 };
 
+const difficultyMap = {
+  "Very Hard": 5,
+  Hard: 4,
+  Medium: 3,
+  Easy: 2,
+  "Very Easy": 1,
+};
+
+const ratingMap = {
+  "Strongly Liked": 5,
+  Liked: 4,
+  Neutral: 3,
+  Disliked: 2,
+  "Strongly Disliked": 1,
+};
+
 // color mappings
 const difficultyColors: { [key: string]: ChipColor } = {
   "Very Easy": "success",
@@ -217,6 +233,10 @@ export default function CourseReviews({
     setSelectedSentiments(typeof value === "string" ? value.split(",") : value);
   };
 
+  // determine if any filters are applied by the user
+  const isFilterApplied =
+    selectedSemesters.length > 0 || selectedSentiments.length > 0;
+
   // filter displayed reviews based on selected filters(s) in the dropdowns
   const filteredReviews = reviews.filter(
     (review: Review) =>
@@ -229,6 +249,36 @@ export default function CourseReviews({
           (review.rating === "Disliked" ||
             review.rating === "Strongly Disliked"))),
   );
+
+  // re-calculate course summary data based on the filtered reviews
+  const getSummaryFromReviews = (filteredReviews: any[]) => {
+    const totalReviews = filteredReviews.length;
+    const averageDifficulty =
+      filteredReviews.reduce(
+        (acc, curr) =>
+          acc +
+          (difficultyMap[curr.difficulty as keyof typeof difficultyMap] || 0),
+        0,
+      ) / totalReviews || 0;
+    const averageRating =
+      filteredReviews.reduce(
+        (acc, curr) =>
+          acc + (ratingMap[curr.rating as keyof typeof ratingMap] || 0),
+        0,
+      ) / totalReviews || 0;
+    const averageWorkload =
+      filteredReviews.reduce(
+        (acc, curr) => acc + parseInt(curr.workload.match(/\d+/)?.[0] || "0"),
+        0,
+      ) / totalReviews || 0;
+
+    return {
+      totalReviews,
+      averageDifficulty: averageDifficulty.toFixed(2),
+      averageWorkload: averageWorkload.toFixed(2),
+      averageRating: averageRating.toFixed(2),
+    };
+  };
 
   const handleDelete = async (reviewId: number, courseCode: string) => {
     setIsSubmitting(true);
@@ -270,6 +320,16 @@ export default function CourseReviews({
       (summary) => summary.course_code === course.course_code,
     ) || null;
 
+  // calculate the summary from filtered reviews or use the default summary (user hasn't filtered anything)
+  const currentSummary = isFilterApplied
+    ? getSummaryFromReviews(filteredReviews)
+    : {
+        totalReviews: summary?.totalReviews,
+        averageDifficulty: summary?.averageDifficulty.toFixed(2),
+        averageWorkload: summary?.averageWorkload.toFixed(2),
+        averageRating: summary?.averageRating.toFixed(2),
+      };
+
   const sections = [
     { label: "Total Reviews", key: "totalReviews" },
     { label: "Average Difficulty", key: "averageDifficulty" },
@@ -287,32 +347,50 @@ export default function CourseReviews({
         Reviews for {course.course_code}: {course.course_name}
       </Typography>
 
-      {summary ? (
-        <Paper sx={{ maxWidth: 800, margin: "30px auto", padding: 2 }}>
-          <Grid container spacing={2}>
-            {sections.map(({ label, key }) => (
-              <Grid item key={key} xs={6} sm={3}>
-                <Box textAlign="center">
-                  <Typography variant="subtitle1" color="textSecondary">
-                    {label}
-                  </Typography>
-                  <Typography variant="h6">
-                    {typeof summary[key] === "number"
-                      ? (summary[key] as number) % 1 === 0
-                        ? summary[key]
-                        : (summary[key] as number).toFixed(2)
-                      : "N/A"}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
+      <Paper sx={{ maxWidth: 800, margin: "30px auto", padding: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={6} sm={3}>
+            <Box textAlign="center">
+              <Typography variant="subtitle1" color="textSecondary">
+                Total Reviews
+              </Typography>
+              <Typography variant="h6">
+                {currentSummary.totalReviews}
+              </Typography>
+            </Box>
           </Grid>
-        </Paper>
-      ) : (
-        <Typography variant="h6" align="center" mt={5}>
-          No summary data is available for this course.
-        </Typography>
-      )}
+          <Grid item xs={6} sm={3}>
+            <Box textAlign="center">
+              <Typography variant="subtitle1" color="textSecondary">
+                Average Difficulty
+              </Typography>
+              <Typography variant="h6">
+                {currentSummary.averageDifficulty}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <Box textAlign="center">
+              <Typography variant="subtitle1" color="textSecondary">
+                Average Workload
+              </Typography>
+              <Typography variant="h6">
+                {currentSummary.averageWorkload}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <Box textAlign="center">
+              <Typography variant="subtitle1" color="textSecondary">
+                Average Rating
+              </Typography>
+              <Typography variant="h6">
+                {currentSummary.averageRating}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Paper>
 
       <Box
         sx={{
