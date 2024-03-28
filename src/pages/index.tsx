@@ -167,7 +167,10 @@ export default function Home({
             md={isSmallScreen ? 12 : 8}
           >
             <Box my={2}>
-              <FormGroup row>
+              <FormGroup
+                row
+                sx={{ justifyContent: "center", m: isSmallScreen ? 1 : 0 }}
+              >
                 <FormControlLabel
                   control={
                     <Switch
