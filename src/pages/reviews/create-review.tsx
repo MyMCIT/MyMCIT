@@ -106,7 +106,7 @@ export default function CreateReview({ courses }: any) {
 
     if (review.length > 0 && (review.length < 50 || review.length > 2000)) {
       setReviewError(
-        "Review must be at least 50 characters and less than 2000",
+        "Review must be at least 50 characters and less than or equal to 2000",
       );
     }
   }, [router, workload, review]);
