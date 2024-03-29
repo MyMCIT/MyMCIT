@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import {SyntheticEvent, useCallback, useEffect, useState} from "react";
+import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Box,
@@ -73,6 +73,10 @@ export default function CreateReview({ courses }: any) {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openAuthSnackbar, setOpenAuthSnackbar] = useState(false);
 
+  // validation error message states
+  const [workloadError, setWorkloadError] = useState("");
+  const [reviewError, setReviewError] = useState("");
+
   useEffect(() => {
     (async () => {
       const { data: session } = await supabase.auth.getSession();
@@ -81,78 +85,106 @@ export default function CreateReview({ courses }: any) {
         router.push("/");
       }
     })();
-  }, [router]);
+
+    setWorkloadError("");
+    setReviewError("");
+
+    if (workload) {
+      const workloadNum = parseInt(workload);
+      if (!/^\d+$/.test(workload) || workloadNum <= 0 || workloadNum > 168) {
+        setWorkloadError(
+          "Workload must be a positive integer less than or equal to 168",
+        );
+      }
+    }
+
+    if (review.length > 0 && (review.length < 50 || review.length > 2000)) {
+      setReviewError(
+        "Review must be at least 50 characters and less than 2000",
+      );
+    }
+  }, [router, workload, review]);
+
+  const isFormValid =
+    !workloadError &&
+    !reviewError &&
+    workload &&
+    review.length >= 50 &&
+    review.length <= 2000;
 
   // submits review
-  const handleSubmit = useCallback(async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: { preventDefault: () => void }) => {
+      e.preventDefault();
 
-    try {
-      setIsSubmitting(true);
+      try {
+        setIsSubmitting(true);
 
-      const {data: sessionData} = await supabase.auth.getSession();
+        const { data: sessionData } = await supabase.auth.getSession();
 
-      // check if there's an active session
-      if (!sessionData?.session) {
-        track("Create-Review-Unauthorized-User");
-        router.push("/"); // redirect to "/" if no active session
+        // check if there's an active session
+        if (!sessionData?.session) {
+          track("Create-Review-Unauthorized-User");
+          router.push("/"); // redirect to "/" if no active session
+          setIsSubmitting(false);
+          return;
+        }
+
+        let apiUrl;
+
+        if (process.env.NODE_ENV === "production") {
+          apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        } else {
+          apiUrl = "http://127.0.0.1:3000";
+        }
+
+        const response = await axios(`${apiUrl}/api/create-review`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionData.session?.access_token}`,
+          },
+          data: JSON.stringify({
+            course_id: course?.id,
+            course_code: course?.course_code,
+            semester: semester,
+            difficulty: difficulty,
+            workload: workload + " hrs/wk",
+            rating: rating,
+            comment: review,
+          }),
+        });
+
         setIsSubmitting(false);
+        const data = await response.data;
+
+        if (response.status !== 200) {
+          track("Create-Review-Failed");
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        track("Create-Review-Success");
+
+        setOpenSnackbar(true);
+        await router.push("/");
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error submitting review:", error.message);
+        }
+      }
+    },
+    [course, difficulty, rating, review, router, semester, workload],
+  );
+
+  const handleCloseSnackbar = useCallback(
+    (event?: SyntheticEvent<Element, Event> | Event, reason?: string) => {
+      if (reason === "clickaway") {
         return;
       }
 
-      let apiUrl;
-
-      if (process.env.NODE_ENV === "production") {
-        apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      } else {
-        apiUrl = "http://127.0.0.1:3000";
-      }
-
-      const response = await axios(`${apiUrl}/api/create-review`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionData.session?.access_token}`,
-        },
-        data: JSON.stringify({
-          course_id: course?.id,
-          course_code: course?.course_code,
-          semester: semester,
-          difficulty: difficulty,
-          workload: workload + " hrs/wk",
-          rating: rating,
-          comment: review,
-        }),
-      });
-
-      setIsSubmitting(false);
-      const data = await response.data;
-
-      if (response.status !== 200) {
-        track("Create-Review-Failed");
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      track("Create-Review-Success");
-
-      setOpenSnackbar(true);
-      await router.push("/");
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error submitting review:", error.message);
-      }
-    }
-  }, [course, difficulty, rating, review, router, semester, workload]);
-
-  const handleCloseSnackbar = useCallback((
-    event?: SyntheticEvent<Element, Event> | Event,
-    reason?: string,
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenSnackbar(false);
-  }, [setOpenSnackbar]);
+      setOpenSnackbar(false);
+    },
+    [setOpenSnackbar],
+  );
 
   const difficultyLevels = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard"];
   const ratings = [
@@ -241,7 +273,9 @@ export default function CreateReview({ courses }: any) {
             </FormControl>
             <FormControl fullWidth sx={{ my: 2 }}>
               <TextField
-                type="number"
+                error={!!workloadError}
+                helperText={workloadError}
+                type="text"
                 value={workload.toString()}
                 onChange={(e) => setWorkload(e.target.value)}
                 label="Workload (hours/week)"
@@ -264,11 +298,14 @@ export default function CreateReview({ courses }: any) {
             </FormControl>
             <FormControl fullWidth sx={{ my: 2 }}>
               <TextField
+                error={!!reviewError}
+                helperText={reviewError}
                 multiline
                 rows={4}
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
                 label="Your Review"
+                inputProps={{ maxLength: 2000 }}
               />
             </FormControl>
             <Button
@@ -276,7 +313,7 @@ export default function CreateReview({ courses }: any) {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              disabled={isSubmitting}
+              disabled={!isFormValid || isSubmitting}
             >
               {isSubmitting ? <CircularProgress size={24} /> : "Create"}
             </Button>
