@@ -55,31 +55,17 @@ export default function ReviewCard({ review, course }: any) {
         <Typography variant="body1" color="text.primary" gutterBottom>
           {review.comment}
         </Typography>
-        <Box
-          display="flex"
-          flexWrap="wrap"
-          justifyContent="space-between"
-          mt={2}
-        >
+        <Box display="flex" flexWrap="wrap" justifyContent="right" mt={2}>
           <Box display="flex" flexWrap="wrap" gap={1}>
-            <Chip
-              icon={<ClassOutlinedIcon />}
-              label={review.semester}
-              sx={{
-                fontSize: "0.75rem",
-                height: "32px",
-                "& .MuiChip-label": { fontSize: "0.75rem" },
-              }}
-            />
             <Chip
               icon={getDifficultyIcon(review.difficulty)}
               label={`Difficulty: ${review.difficulty}`}
               color={difficultyColor}
               variant="outlined"
               sx={{
-                fontSize: "0.75rem",
-                height: "32px",
-                "& .MuiChip-label": { fontSize: "0.75rem" },
+                m: 0.5,
+                fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.875rem" },
+                height: { xs: "24px", sm: "32px", md: "36px" },
               }}
             />
             <Chip
@@ -88,18 +74,18 @@ export default function ReviewCard({ review, course }: any) {
               color={ratingColor}
               variant="outlined"
               sx={{
-                fontSize: "0.75rem",
-                height: "32px",
-                "& .MuiChip-label": { fontSize: "0.75rem" },
+                m: 0.5,
+                fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.875rem" },
+                height: { xs: "24px", sm: "32px", md: "36px" },
               }}
             />
             <Chip
               icon={<AccessTimeOutlinedIcon />}
               label={`${review.workload}`}
               sx={{
-                fontSize: "0.75rem",
-                height: "32px",
-                "& .MuiChip-label": { fontSize: "0.75rem" },
+                m: 0.5,
+                fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.875rem" },
+                height: { xs: "24px", sm: "32px", md: "36px" },
               }}
             />
           </Box>
