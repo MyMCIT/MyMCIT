@@ -111,12 +111,18 @@ export default function CreateReview({ courses }: any) {
     }
   }, [router, workload, review]);
 
+  // validation checks -- if any are false Create button will be disabled
   const isFormValid =
-    !workloadError &&
-    !reviewError &&
+    courseName &&
+    semester &&
+    difficulty &&
     workload &&
+    rating &&
+    review &&
     review.length >= 50 &&
-    review.length <= 2000;
+    review.length <= 2000 &&
+    !workloadError &&
+    !reviewError;
 
   // submits review
   const handleSubmit = useCallback(
@@ -229,6 +235,7 @@ export default function CreateReview({ courses }: any) {
               <InputLabel id="course-label">Course</InputLabel>
               <Select
                 labelId="course-label"
+                required
                 value={courseName}
                 onChange={(e) => {
                   const selectedCourse: Course = courses.find(
@@ -251,6 +258,7 @@ export default function CreateReview({ courses }: any) {
               <InputLabel id="semester-label">Semester</InputLabel>
               <Select
                 labelId="semester-label"
+                required
                 value={semester}
                 onChange={(e) => setSemester(e.target.value)}
                 label="Semester"
@@ -266,6 +274,7 @@ export default function CreateReview({ courses }: any) {
               <InputLabel id="difficulty-label">Difficulty</InputLabel>
               <Select
                 labelId="difficulty-label"
+                required
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
                 label="Difficulty"
@@ -279,6 +288,7 @@ export default function CreateReview({ courses }: any) {
             </FormControl>
             <FormControl fullWidth sx={{ my: 2 }}>
               <TextField
+                required
                 error={!!workloadError}
                 helperText={workloadError}
                 type="text"
@@ -290,6 +300,7 @@ export default function CreateReview({ courses }: any) {
             <FormControl fullWidth sx={{ my: 2 }}>
               <InputLabel id="rating-label">Rating</InputLabel>
               <Select
+                required
                 labelId="rating-label"
                 value={rating}
                 onChange={(e) => setRating(e.target.value)}
@@ -304,6 +315,7 @@ export default function CreateReview({ courses }: any) {
             </FormControl>
             <FormControl fullWidth sx={{ my: 2 }}>
               <TextField
+                required
                 error={!!reviewError}
                 helperText={reviewError}
                 multiline
