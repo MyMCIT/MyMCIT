@@ -1,9 +1,9 @@
 import { Chip, Typography, Box, Card, CardContent } from "@mui/material";
 import { School } from "@mui/icons-material";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
-import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
 import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
 import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
+import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
 
 type CourseReviewSummary = {
   id: number;
@@ -57,6 +57,15 @@ export default function ReviewCard({ review, course }: any) {
         </Typography>
         <Box display="flex" flexWrap="wrap" justifyContent="right" mt={2}>
           <Box display="flex" flexWrap="wrap" gap={1}>
+            <Chip
+              icon={<ClassOutlinedIcon />}
+              label={review.semester}
+              sx={{
+                m: 0.5,
+                fontSize: { xs: "0.7rem", sm: "0.75rem", md: "0.875rem" },
+                height: { xs: "24px", sm: "32px", md: "36px" },
+              }}
+            />
             <Chip
               icon={getDifficultyIcon(review.difficulty)}
               label={`Difficulty: ${review.difficulty}`}
