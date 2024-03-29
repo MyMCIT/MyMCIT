@@ -57,34 +57,50 @@ export default function ReviewCard({ review, course }: any) {
         </Typography>
         <Box
           display="flex"
-          justifyContent="space-between"
           flexWrap="wrap"
+          justifyContent="space-between"
           mt={2}
         >
-          <Box flexGrow={1} display="flex" justifyContent="flex-end">
+          <Box display="flex" flexWrap="wrap" gap={1}>
             <Chip
               icon={<ClassOutlinedIcon />}
               label={review.semester}
-              sx={{ m: 0.5 }}
+              sx={{
+                fontSize: "0.75rem",
+                height: "32px",
+                "& .MuiChip-label": { fontSize: "0.75rem" },
+              }}
             />
             <Chip
               icon={getDifficultyIcon(review.difficulty)}
               label={`Difficulty: ${review.difficulty}`}
               color={difficultyColor}
               variant="outlined"
-              sx={{ m: 0.5 }}
+              sx={{
+                fontSize: "0.75rem",
+                height: "32px",
+                "& .MuiChip-label": { fontSize: "0.75rem" },
+              }}
             />
             <Chip
               icon={getRatingIcon(review.rating)}
               label={`Rating: ${review.rating}`}
               color={ratingColor}
               variant="outlined"
-              sx={{ m: 0.5 }}
+              sx={{
+                fontSize: "0.75rem",
+                height: "32px",
+                "& .MuiChip-label": { fontSize: "0.75rem" },
+              }}
             />
             <Chip
               icon={<AccessTimeOutlinedIcon />}
               label={`${review.workload}`}
-              sx={{ m: 0.5 }}
+              sx={{
+                fontSize: "0.75rem",
+                height: "32px",
+                "& .MuiChip-label": { fontSize: "0.75rem" },
+              }}
             />
           </Box>
         </Box>
