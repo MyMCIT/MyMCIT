@@ -14,6 +14,8 @@ import {
   Snackbar,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { getSemesters } from "@/lib/semesters";
 import { GetStaticProps } from "next";
@@ -76,6 +78,10 @@ export default function CreateReview({ courses }: any) {
   // validation error message states
   const [workloadError, setWorkloadError] = useState("");
   const [reviewError, setReviewError] = useState("");
+
+  // for responsive screen sizing
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("xs"));
 
   useEffect(() => {
     (async () => {
@@ -198,11 +204,9 @@ export default function CreateReview({ courses }: any) {
 
   return (
     <>
-      <div>
-        <Head>
-          <title>Create Review</title>
-        </Head>
-      </div>
+      <Head>
+        <title>Create Review</title>
+      </Head>
       <Container maxWidth="sm">
         <Box
           sx={{
@@ -210,6 +214,7 @@ export default function CreateReview({ courses }: any) {
             flexDirection: "column",
             alignItems: "center",
             mt: 2,
+            p: isXs ? 1 : 2, // adjusts based on screen size
           }}
         >
           <Typography variant="h6">Create Review</Typography>
@@ -218,6 +223,7 @@ export default function CreateReview({ courses }: any) {
             onSubmit={handleSubmit}
             noValidate
             sx={{ mt: 1 }}
+            width="100%"
           >
             <FormControl fullWidth sx={{ my: 2 }}>
               <InputLabel id="course-label">Course</InputLabel>
