@@ -45,7 +45,7 @@ export default function SpeedDialTooltipOpen() {
           queryParams: {
             hd: "seas.upenn.edu",
           },
-          redirectTo: baseUrl,
+          redirectTo: `${baseUrl}/reviews/create-review`,
         },
       })
       .catch(console.error);
