@@ -4,6 +4,7 @@ import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
 import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
+import { hidden } from "next/dist/lib/picocolors";
 
 type CourseReviewSummary = {
   id: number;
@@ -34,16 +35,17 @@ export default function ReviewCard({ review, course }: any) {
         my: 2,
         p: 2,
         boxShadow: 3,
+        overflow: "hidden",
       }}
     >
       <CardContent>
         <Box display="flex" alignItems="center" mb={2}>
           <School sx={{ fontSize: 40, mr: 2 }} />
-          <Box>
+          <Box flexGrow={1}>
             <Typography
               variant="body1"
               component="div"
-              sx={{ fontWeight: "bold" }}
+              sx={{ fontWeight: "bold", wordWrap: "break-word" }}
             >
               {course.course_code}: {course.course_name}
             </Typography>
@@ -52,7 +54,12 @@ export default function ReviewCard({ review, course }: any) {
             </Typography>
           </Box>
         </Box>
-        <Typography variant="body1" color="text.primary" gutterBottom>
+        <Typography
+          variant="body1"
+          color="text.primary"
+          gutterBottom
+          sx={{ wordWrap: "break-word" }}
+        >
           {review.comment}
         </Typography>
         <Box display="flex" flexWrap="wrap" justifyContent="right" mt={2}>
