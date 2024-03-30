@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { authSupabase } from "@/lib/supabase";
 import axios from "axios";
@@ -14,6 +14,31 @@ export default async function createReview(req: any, res: any) {
     rating,
     comment,
   } = req.body;
+
+  // backend validation checks
+  if (
+    !course_id ||
+    !semester ||
+    !difficulty ||
+    !workload ||
+    !rating ||
+    !comment
+  ) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+  // workload format validation check, remember "hrs/wk" gets appended to it in the API request, so need to account for that
+  // by extracting the number from the value, not the "hrs/wk" part
+  const workloadValue = parseInt(workload.match(/\d+/)?.[0] ?? "");
+  if (isNaN(workloadValue) || workloadValue <= 0 || workloadValue > 168) {
+    return res.status(400).json({ error: "Invalid workload value." });
+  }
+
+  // review length validation check
+  if (comment.length < 50 || comment.length > 2000) {
+    return res.status(400).json({ error: "Invalid comment length." });
+  }
+
   // get the user's access token for auth with supabase client
   const authHeader = req.headers.authorization;
 
