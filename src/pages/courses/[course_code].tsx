@@ -401,67 +401,74 @@ export default function CourseReviews({
         </Grid>
       </Paper>
 
-      <Box
-        sx={{
-          maxWidth: 800,
-          margin: "auto",
-          padding: 2,
-          display: "flex",
-          gap: 2,
-          alignItems: "center",
-        }}
-      >
-        <FormControl sx={{ m: 1, width: 300 }}>
-          <InputLabel id="semester-select-label">Semester</InputLabel>
-          <Select
-            labelId="semester-select-label"
-            multiple
-            value={selectedSemesters}
-            onChange={handleSemesterChange}
-            input={<OutlinedInput id="select-multiple-chip" label="Semester" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
+      <Box sx={{ maxWidth: 800, margin: "auto", padding: 2 }}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs={12} sm={6} md={4}>
+            <FormControl fullWidth>
+              <InputLabel id="semester-select-label">Semester</InputLabel>
+              <Select
+                labelId="semester-select-label"
+                multiple
+                value={selectedSemesters}
+                onChange={handleSemesterChange}
+                input={
+                  <OutlinedInput id="select-multiple-chip" label="Semester" />
+                }
+                renderValue={(selected) => (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((value) => (
+                      <Chip key={value} label={value} />
+                    ))}
+                  </Box>
+                )}
+              >
+                {allSemesters.map((semester) => (
+                  <MenuItem key={semester} value={semester}>
+                    {semester}
+                  </MenuItem>
                 ))}
-              </Box>
-            )}
-          >
-            {allSemesters.map((semester) => (
-              <MenuItem key={semester} value={semester}>
-                {semester}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ m: 1, width: 300 }}>
-          <InputLabel id="sentiment-select-label">Sentiment</InputLabel>
-          <Select
-            labelId="sentiment-select-label"
-            multiple
-            value={selectedSentiments}
-            onChange={handleSentimentChange}
-            input={
-              <OutlinedInput id="select-multiple-chip" label="Sentiment" />
-            }
-            renderValue={(selected) => (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <FormControl fullWidth>
+              <InputLabel id="sentiment-select-label">Sentiment</InputLabel>
+              <Select
+                labelId="sentiment-select-label"
+                multiple
+                value={selectedSentiments}
+                onChange={handleSentimentChange}
+                input={
+                  <OutlinedInput id="select-multiple-chip" label="Sentiment" />
+                }
+                renderValue={(selected) => (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((value) => (
+                      <Chip key={value} label={value} />
+                    ))}
+                  </Box>
+                )}
+              >
+                {sentimentOptions.map((sentiment) => (
+                  <MenuItem key={sentiment} value={sentiment}>
+                    {sentiment}
+                  </MenuItem>
                 ))}
-              </Box>
-            )}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={4}
+            sx={{ display: "flex", justifyContent: "center" }}
           >
-            {sentimentOptions.map((sentiment) => (
-              <MenuItem key={sentiment} value={sentiment}>
-                {sentiment}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button variant="outlined" onClick={handleResetFilters}>
-          Reset
-        </Button>
+            <Button variant="outlined" onClick={handleResetFilters}>
+              Reset
+            </Button>
+          </Grid>
+        </Grid>
       </Box>
 
       {filteredReviews.map((review, index) => (

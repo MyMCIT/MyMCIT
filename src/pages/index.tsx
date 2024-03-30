@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import {
@@ -41,7 +41,7 @@ export const getStaticProps: GetStaticProps<{
     const courseSummaries: CourseReviewSummary[] = await res.data;
 
     return {
-      props: {courseSummaries},
+      props: { courseSummaries },
       revalidate: 86400,
     };
   } catch (error) {
@@ -135,6 +135,7 @@ export default function Home({
       field: "averageWorkload",
       headerName: "Workload (hrs/wk)",
       minWidth: 150,
+      type: "number",
     },
     { field: "averageRating", headerName: "Rating (1-5)", minWidth: 120 },
   ];
@@ -166,7 +167,10 @@ export default function Home({
             md={isSmallScreen ? 12 : 8}
           >
             <Box my={2}>
-              <FormGroup row>
+              <FormGroup
+                row
+                sx={{ justifyContent: "center", m: isSmallScreen ? 1 : 0 }}
+              >
                 <FormControlLabel
                   control={
                     <Switch
