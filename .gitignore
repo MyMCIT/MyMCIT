@@ -43,6 +43,3 @@ client_secret_463023643481-emdp2ign2q1iud5pscavbgo3o33gl5lc.apps.googleuserconte
 
 # others
 supabase/
-
-# Sentry Config File
-.sentryclirc
