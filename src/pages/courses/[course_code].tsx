@@ -208,7 +208,7 @@ export default function CourseReviews({
   ];
 
   // sentiment options
-  const sentimentOptions = ["Positive", "Negative"];
+  const sentimentOptions = ["Positive", "Negative", "Neutral"];
 
   if (!reviews.length) {
     return (
@@ -254,7 +254,9 @@ export default function CourseReviews({
           (review.rating === "Liked" || review.rating === "Strongly Liked")) ||
         (selectedSentiments.includes("Negative") &&
           (review.rating === "Disliked" ||
-            review.rating === "Strongly Disliked"))),
+            review.rating === "Strongly Disliked")) ||
+        (selectedSentiments.includes("Neutral") &&
+          review.rating === "Neutral")),
   );
 
   // re-calculate course summary data based on the filtered reviews
