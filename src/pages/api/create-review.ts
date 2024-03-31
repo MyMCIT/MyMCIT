@@ -27,6 +27,17 @@ export default async function createReview(req: any, res: any) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
+  // take the year from the semester and validate it
+  const yearExtracted = parseInt(semester.split(" ")[1], 10);
+  const currentYear = new Date().getFullYear();
+
+  // check if the semester year falls within the last three years
+  if (yearExtracted < currentYear - 2 || yearExtracted > currentYear) {
+    return res
+      .status(400)
+      .json({ error: "Semester year is out of the valid range." });
+  }
+
   // workload format validation check, remember "hrs/wk" gets appended to it in the API request, so need to account for that
   // by extracting the number from the value, not the "hrs/wk" part
   const workloadValue = parseInt(workload.match(/\d+/)?.[0] ?? "");
