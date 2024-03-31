@@ -208,6 +208,27 @@ export default function CreateReview({ courses }: any) {
   ];
   const semesters = getSemesters();
 
+  // sort semesters in descending order
+  const sortedSemesters = semesters.sort((a, b) => {
+    // split the semester into Season and Year
+    const partsA = a.split(" ");
+    const partsB = b.split(" ");
+
+    // compare years
+    const yearDifference = parseInt(partsB[1]) - parseInt(partsA[1]);
+    if (yearDifference !== 0) {
+      return yearDifference;
+    }
+
+    // ff the years are the same, compare by semester, with order Spring, Summer, Fall
+    const order: { [key: string]: number } = { Spring: 1, Summer: 2, Fall: 3 };
+
+    return (
+      (order[partsB[0] as keyof typeof order] || 0) -
+      (order[partsA[0] as keyof typeof order] || 0)
+    );
+  });
+
   return (
     <>
       <Head>
@@ -263,7 +284,7 @@ export default function CreateReview({ courses }: any) {
                 onChange={(e) => setSemester(e.target.value)}
                 label="Semester"
               >
-                {semesters.map((season, i) => (
+                {sortedSemesters.map((season, i) => (
                   <MenuItem key={i} value={season}>
                     {season}
                   </MenuItem>
