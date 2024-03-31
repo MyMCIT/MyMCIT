@@ -21,6 +21,7 @@ import { styled } from "@mui/system";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/router";
 import { track } from "@vercel/analytics";
+import AddReviewButton from "@/components/AddReviewButton";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -236,6 +237,9 @@ export default function Navbar({ themeMode, setThemeMode }: any) {
           </Hidden>
         </div>
         <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ marginRight: 10 }}>
+            <AddReviewButton />
+          </div>
           <IconButton color="inherit" onClick={handleThemeChange}>
             {themeMode === "light" ? <Brightness7 /> : <Brightness3 />}
           </IconButton>

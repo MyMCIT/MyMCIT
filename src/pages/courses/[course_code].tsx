@@ -23,10 +23,10 @@ import { Course } from "@/models/course";
 import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
-import { Session } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import axios from "axios";
+import AddReviewButton from "@/components/AddReviewButton";
 
 type CourseReviewSummary = {
   id: number;
@@ -189,11 +189,7 @@ export default function CourseReviews({
   course,
   courseSummary,
   reviews,
-  currentUser,
-}: InferGetStaticPropsType<typeof getStaticProps> & {
-  currentUser: Session | null;
-}) {
-  const router = useRouter();
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // state to manage selected semester(s) filter
@@ -469,6 +465,19 @@ export default function CourseReviews({
             </Button>
           </Grid>
         </Grid>
+      </Box>
+
+      <Box
+        sx={{
+          position: "sticky",
+          top: 0,
+          zIndex: 1100,
+          backgroundColor: "background.paper",
+        }}
+      >
+        <Box sx={{ maxWidth: 800, margin: "auto", padding: 2 }}>
+          <AddReviewButton />
+        </Box>
       </Box>
 
       {filteredReviews.map((review, index) => (
