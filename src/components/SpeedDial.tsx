@@ -2,7 +2,6 @@ import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import MailIcon from "@mui/icons-material/Mail";
-import AddIcon from "@mui/icons-material/Add";
 import { useState, useEffect } from "react";
 import { AuthSession, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
@@ -11,7 +10,7 @@ import { useRouter } from "next/router";
 import { track } from "@vercel/analytics";
 
 const actions = [
-  { icon: <Create />, name: "Create Review" },
+  { icon: <Create />, name: "Add New Review" },
   { icon: <MailIcon />, name: "Contact Us" },
 ];
 
@@ -54,7 +53,7 @@ export default function SpeedDialTooltipOpen() {
   const handleAction = (actionName: string) => {
     setOpen(false);
 
-    if (actionName === "Create Review") {
+    if (actionName === "Add New Review") {
       track("Create-Review-Clicked");
       if (user) {
         router.push("/reviews/create-review");
