@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Container,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
@@ -208,6 +209,33 @@ export default function CreateReview({ courses }: any) {
   ];
   const semesters = getSemesters();
 
+  // get current year and the 2 years before
+  const currentYear = new Date().getFullYear();
+  // include the last three years
+  const validYears = [currentYear, currentYear - 1, currentYear - 2];
+
+  // only include those within the last 3 years as selectable to prevent users from reviewing courses that are too old for them to remember
+  const filteredAndSortedSemesters = semesters
+    .filter((semester) => {
+      const year = parseInt(semester.split(" ")[1], 10);
+      return validYears.includes(year);
+    })
+    .sort((a, b) => {
+      const partsA = a.split(" ");
+      const partsB = b.split(" ");
+
+      // compare years first
+      const yearDifference = parseInt(partsB[1], 10) - parseInt(partsA[1], 10);
+      if (yearDifference !== 0) return yearDifference;
+
+      // compare semesters within the same year
+      const order = { Spring: 1, Summer: 2, Fall: 3 };
+      return (
+        (order[partsB[0] as keyof typeof order] || 0) -
+        (order[partsA[0] as keyof typeof order] || 0)
+      );
+    });
+
   return (
     <>
       <Head>
@@ -263,12 +291,15 @@ export default function CreateReview({ courses }: any) {
                 onChange={(e) => setSemester(e.target.value)}
                 label="Semester"
               >
-                {semesters.map((season, i) => (
+                {filteredAndSortedSemesters.map((season, i) => (
                   <MenuItem key={i} value={season}>
                     {season}
                   </MenuItem>
                 ))}
               </Select>
+              <FormHelperText>
+                You can only review courses from the last 3 years.
+              </FormHelperText>
             </FormControl>
             <FormControl fullWidth sx={{ my: 2 }}>
               <InputLabel id="difficulty-label">Difficulty</InputLabel>
