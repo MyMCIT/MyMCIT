@@ -265,23 +265,32 @@ export default function Home({
 
               `}
               </style>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                onRowClick={handleRowClick}
-                autoHeight // setting autoHeight to adjust grid height to content
-                sortModel={sortModel}
-                onSortModelChange={(model) => setSortModel(model)}
-                slots={{ toolbar: GridToolbar }}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                disableColumnFilter
-                disableColumnSelector
-                disableDensitySelector
-              />
+              <Box sx={{ width: "100%", height: 650, pt: 5 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <DataGrid
+                      rows={rows}
+                      columns={columns}
+                      pagination
+                      autoPageSize={false}
+                      pageSizeOptions={[10]}
+                      onRowClick={handleRowClick}
+                      sortModel={sortModel}
+                      onSortModelChange={(model) => setSortModel(model)}
+                      slots={{ toolbar: GridToolbar }}
+                      slotProps={{
+                        toolbar: {
+                          showQuickFilter: true,
+                        },
+                      }}
+                      disableColumnFilter
+                      disableColumnSelector
+                      disableDensitySelector
+                      sx={{ height: 600 }}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
             </div>
           </Grid>
           <Grid
