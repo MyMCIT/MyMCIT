@@ -42,7 +42,7 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
   const theme = useTheme();
   // state for handling reviews
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userVote, setUserVote] = useState<boolean | undefined>(userHasVoted);
+  const [userVote, setUserVote] = useState(userHasVoted);
   const [netVotes, setNetVotes] = useState(review.net_votes || 0);
 
   // check if user logged in
@@ -73,7 +73,7 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
   const ratingColor = getRatingColor(review.rating);
 
   const handleVote = async (type: "up" | "down") => {
-    if (userVote != undefined || !isLoggedIn || !userHasVoted) {
+    if (userVote != undefined || !isLoggedIn) {
       return; // prevent voting if already voted or not logged in
     }
 
