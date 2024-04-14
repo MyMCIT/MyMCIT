@@ -94,7 +94,7 @@ export default async function handleVote(
   }
 
   // Update review vote counts
-  const { error: updateError } = await supabaseClient
+  const { data: updatedReview, error: updateError } = await supabaseClient
     .from("Reviews")
     .update({
       [voteIncrementField]: newVoteCount,
@@ -106,5 +106,10 @@ export default async function handleVote(
     return res.status(500).json({ error: "Failed to update review votes" });
   }
 
-  return res.status(200).json({ message: "Vote recorded successfully" });
+  // return success and the updated vote counts to update the UI
+  return res.status(200).json({
+    message: "Vote recorded successfully",
+    review: updatedReview,
+    userVote: voteType,
+  });
 }

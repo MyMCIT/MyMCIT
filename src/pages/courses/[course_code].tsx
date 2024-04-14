@@ -24,7 +24,7 @@ import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import AddReviewButton from "@/components/AddReviewButton";
 
@@ -51,6 +51,11 @@ type ChipColor = OverridableStringUnion<
   ChipPropsColorOverrides
 >;
 
+let apiUrl =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_API_URL
+    : "http://127.0.0.1:3000";
+
 export const getStaticPaths: GetStaticPaths = async () => {
   const { data: courses, error } = await supabase
     .from("Courses")
@@ -67,10 +72,6 @@ export const getStaticProps = async (
 ) => {
   try {
     const { course_code } = context.params as { course_code: string };
-    let apiUrl =
-      process.env.NODE_ENV === "production"
-        ? process.env.NEXT_PUBLIC_API_URL
-        : "http://127.0.0.1:3000";
 
     // fetch course data
     const resCourse = await axios(
@@ -197,6 +198,38 @@ export default function CourseReviews({
 
   // state to manage the reviews by positive/negative sentiment
   const [selectedSentiments, setSelectedSentiments] = useState<string[]>([]);
+
+  // for storing all the reviews user has already voted on
+  const [userVotes, setUserVotes] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    // Fetch user votes when the course is loaded and the user is authenticated
+    const fetchUserVotes = async () => {
+      try {
+        const session = await supabase.auth.getSession();
+        if (session.data?.session) {
+          const response = await fetch(`${apiUrl}/api/user-votes`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.data.session.access_token}`,
+            },
+            body: JSON.stringify({ courseId: course.id }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUserVotes(data.userVotes);
+          } else {
+            console.error("Failed to fetch user votes");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user votes:", error);
+      }
+    };
+
+    fetchUserVotes();
+  }, [course.id]);
 
   // array to hold all the semesters
   const allSemesters: string[] = [
