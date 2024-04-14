@@ -1,6 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { authSupabase } from "@/lib/supabase";
 
+// interface for review data type safety check
+interface ReviewData {
+  positive_votes: number;
+  negative_votes: number;
+}
+
 export default async function handleVote(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -9,9 +15,8 @@ export default async function handleVote(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // pull the reviewId and voteType (thumbs up = true; thumbs down = false) from the request body
+  // get reviewId and voteType (thumbs up = true; thumbs down = false) from request body
   const { reviewId, voteType } = req.body;
-  // authenticate the user with supabase
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -21,7 +26,6 @@ export default async function handleVote(
   const token = authHeader.split(" ")[1];
   const supabaseClient = authSupabase(authHeader);
 
-  // fetch the user
   const { data: userData, error: userError } =
     await supabaseClient.auth.getUser(token);
 
@@ -29,7 +33,7 @@ export default async function handleVote(
     return res.status(401).json({ error: "Authentication failed" });
   }
 
-  // check if the user has already voted; users can only vote once per review
+  // check if user has already voted on this review
   const { data: existingVote, error: existingVoteError } = await supabaseClient
     .from("ReviewVotes")
     .select("*")
@@ -37,20 +41,38 @@ export default async function handleVote(
     .eq("review_id", reviewId)
     .single();
 
-  // error handling for vote checking
   if (existingVoteError && !existingVoteError.message.includes("No rows")) {
-    console.error(existingVoteError);
     return res.status(500).json({ error: "Failed to check existing votes" });
   }
 
-  // if user has already voted on review, return 405 status code and error message
   if (existingVote) {
     return res
       .status(409)
       .json({ error: "You have already voted on this review" });
   }
 
-  // otherwise, insert new vote
+  // determine which field to increment based on voteType
+  const voteIncrementField = voteType ? "positive_votes" : "negative_votes";
+  // Fetch current vote count
+  const { data, error: reviewFetchError } = await supabaseClient
+    .from("Reviews")
+    .select(voteIncrementField)
+    .eq("id", reviewId)
+    .single();
+
+  if (reviewFetchError) {
+    console.error(reviewFetchError);
+    return res.status(500).json({ error: "Failed to fetch review data" });
+  }
+
+  // cast to ReviewData type for type safety
+  const reviewData = data as ReviewData;
+
+  // Increment the vote count
+  const newVoteCount =
+    (reviewData[voteType ? "positive_votes" : "negative_votes"] || 0) + 1;
+
+  // Insert the new vote
   const { error: insertError } = await supabaseClient
     .from("ReviewVotes")
     .insert([
@@ -66,6 +88,18 @@ export default async function handleVote(
     return res.status(500).json({ error: insertError.message });
   }
 
-  // don't use on-demand ISR; real-time updates are better for voting
+  // Update review vote counts
+  const { error: updateError } = await supabaseClient
+    .from("Reviews")
+    .update({
+      [voteIncrementField]: newVoteCount,
+    })
+    .eq("id", reviewId);
+
+  if (updateError) {
+    console.error(updateError);
+    return res.status(500).json({ error: "Failed to update review votes" });
+  }
+
   return res.status(200).json({ message: "Vote recorded successfully" });
 }

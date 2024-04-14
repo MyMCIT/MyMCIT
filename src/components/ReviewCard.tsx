@@ -4,6 +4,7 @@ import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
 import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
+import { useState } from "react";
 
 type CourseReviewSummary = {
   id: number;
@@ -23,6 +24,11 @@ const formatDate = (dateString: string) => {
 };
 
 export default function ReviewCard({ review, course }: any) {
+  // state for handling reviews
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userVote, setUserVote] = useState(null);
+  const [netVotes, setNetVotes] = useState(review.net_votes || 0);
+
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
 
