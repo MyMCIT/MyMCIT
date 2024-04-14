@@ -1,10 +1,20 @@
-import { Chip, Typography, Box, Card, CardContent } from "@mui/material";
-import { School } from "@mui/icons-material";
+import {
+  Chip,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  IconButton,
+  useTheme,
+} from "@mui/material";
+import { School, ThumbDown, ThumbUp } from "@mui/icons-material";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
 import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import axios from "axios";
 
 type CourseReviewSummary = {
   id: number;
@@ -24,13 +34,74 @@ const formatDate = (dateString: string) => {
 };
 
 export default function ReviewCard({ review, course }: any) {
+  const theme = useTheme();
   // state for handling reviews
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userVote, setUserVote] = useState(null);
+  const [userVote, setUserVote] = useState<boolean>();
   const [netVotes, setNetVotes] = useState(review.net_votes || 0);
+
+  // check if user logged in
+  const userCheck = async () => {
+    try {
+      // retrieve current user session from supabase
+      const { data: session } = await supabase.auth.getSession();
+
+      // if there's a logged-in user, route them to the create review page, else send them to the login page
+      if (session.session?.user) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    } catch (e: any) {
+      console.log(e);
+      throw new Error(e);
+    }
+  };
+
+  // set up useEffect to check if user is logged in, with dependency on if user logged in state has changed
+  useEffect(() => {
+    userCheck();
+  }, [isLoggedIn]);
 
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
+
+  const handleVote = async (type: "up" | "down") => {
+    if (userVote || !isLoggedIn) {
+      return; // P=prevent voting if already voted or not logged in
+    }
+
+    // convert type to boolean where 'up' is true and 'down' is false
+    // bc this is how it's stored on Reviews table in db
+    const voteType = type === "up";
+
+    try {
+      const response = await fetch("/api/vote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reviewId: review.id,
+          voteType: voteType, // true for 'up', false for 'down'
+        }),
+      });
+
+      if (response.status === 200) {
+        setUserVote(voteType);
+        const voteIncrement = voteType ? 1 : -1;
+        setNetVotes((prev: number) => prev + voteIncrement);
+      } else {
+        const result = await response.json();
+        console.error("Failed to record vote:", result.error);
+      }
+    } catch (error: any) {
+      console.error(
+        "Error voting:",
+        error.response?.data?.error || error.message,
+      );
+    }
+  };
 
   return (
     <Card
@@ -110,6 +181,44 @@ export default function ReviewCard({ review, course }: any) {
               }}
             />
           </Box>
+        </Box>
+        <Box
+          sx={{
+            mt: 2,
+            p: 1,
+            backgroundColor:
+              theme.palette.mode === "dark" ? "grey.800" : "grey.200",
+            color: theme.palette.mode === "dark" ? "grey.300" : "grey.900",
+            borderRadius: "4px",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="body2" mr={1}>
+            Is this review helpful?
+          </Typography>
+          {isLoggedIn ? (
+            <>
+              <IconButton
+                onClick={() => handleVote("up")}
+                disabled={!!userVote}
+                color="success"
+              >
+                <ThumbUp sx={{ color: userVote === true ? "green" : "grey" }} />
+              </IconButton>
+              <IconButton
+                onClick={() => handleVote("down")}
+                disabled={!!userVote}
+                color="error"
+              >
+                <ThumbDown
+                  sx={{ color: userVote === false ? "red" : "grey" }}
+                />
+              </IconButton>
+            </>
+          ) : (
+            <Typography>Login to rate this review</Typography>
+          )}
         </Box>
       </CardContent>
     </Card>
