@@ -203,7 +203,7 @@ export default function CourseReviews({
   const [userVotes, setUserVotes] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
-    // Fetch user votes when the course is loaded and the user is authenticated
+    // fetch user votes when the course is loaded and the user is authenticated
     const fetchUserVotes = async () => {
       try {
         const session = await supabase.auth.getSession();
@@ -514,7 +514,12 @@ export default function CourseReviews({
       </Box>
 
       {filteredReviews.map((review, index) => (
-        <ReviewCard review={review} key={review.id} course={course} />
+        <ReviewCard
+          review={review}
+          key={review.id}
+          course={course}
+          userHasVoted={userVotes[review.id]}
+        />
       ))}
 
       <SpeedDialTooltipOpen />

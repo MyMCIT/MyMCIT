@@ -26,17 +26,23 @@ type CourseReviewSummary = {
   [key: string]: number | string;
 };
 
+type ReviewCardProps = {
+  review: any;
+  course: any;
+  userHasVoted?: boolean; // This prop represents whether the user has voted on this review
+};
+
 // format date for each review's created_at db date
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 };
 
-export default function ReviewCard({ review, course }: any) {
+export default function ReviewCard({ review, course, userHasVoted }: any) {
   const theme = useTheme();
   // state for handling reviews
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userVote, setUserVote] = useState<boolean>();
+  const [userVote, setUserVote] = useState<boolean | undefined>(userHasVoted);
   const [netVotes, setNetVotes] = useState(review.net_votes || 0);
 
   // check if user logged in
@@ -60,14 +66,15 @@ export default function ReviewCard({ review, course }: any) {
   // set up useEffect to check if user is logged in, with dependency on if user logged in state has changed
   useEffect(() => {
     userCheck();
-  }, [isLoggedIn]);
+    setUserVote(userHasVoted);
+  }, [isLoggedIn, userHasVoted]);
 
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
 
   const handleVote = async (type: "up" | "down") => {
-    if (userVote || !isLoggedIn) {
-      return; // P=prevent voting if already voted or not logged in
+    if (userVote != undefined || !isLoggedIn || !userHasVoted) {
+      return; // prevent voting if already voted or not logged in
     }
 
     // convert type to boolean where 'up' is true and 'down' is false
@@ -210,7 +217,7 @@ export default function ReviewCard({ review, course }: any) {
               <>
                 <IconButton
                   onClick={() => handleVote("up")}
-                  disabled={!!userVote}
+                  disabled={userVote !== undefined}
                   color="success"
                 >
                   <ThumbUp
@@ -219,7 +226,7 @@ export default function ReviewCard({ review, course }: any) {
                 </IconButton>
                 <IconButton
                   onClick={() => handleVote("down")}
-                  disabled={!!userVote}
+                  disabled={userVote !== undefined}
                   color="error"
                 >
                   <ThumbDown
