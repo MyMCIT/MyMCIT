@@ -14,7 +14,6 @@ import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import axios from "axios";
 
 type CourseReviewSummary = {
   id: number;
@@ -76,10 +75,18 @@ export default function ReviewCard({ review, course }: any) {
     const voteType = type === "up";
 
     try {
-      const response = await fetch("/api/vote", {
+      let apiUrl =
+        process.env.NODE_ENV === "production"
+          ? process.env.NEXT_PUBLIC_API_URL
+          : "http://127.0.0.1:3000";
+
+      const { data: session } = await supabase.auth.getSession();
+
+      const response = await fetch(`${apiUrl}/api/vote`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session.session?.access_token}`,
         },
         body: JSON.stringify({
           reviewId: review.id,
@@ -192,33 +199,46 @@ export default function ReviewCard({ review, course }: any) {
             borderRadius: "4px",
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <Typography variant="body2" mr={1}>
-            Is this review helpful?
-          </Typography>
-          {isLoggedIn ? (
-            <>
-              <IconButton
-                onClick={() => handleVote("up")}
-                disabled={!!userVote}
-                color="success"
-              >
-                <ThumbUp sx={{ color: userVote === true ? "green" : "grey" }} />
-              </IconButton>
-              <IconButton
-                onClick={() => handleVote("down")}
-                disabled={!!userVote}
-                color="error"
-              >
-                <ThumbDown
-                  sx={{ color: userVote === false ? "red" : "grey" }}
-                />
-              </IconButton>
-            </>
-          ) : (
-            <Typography>Login to rate this review</Typography>
-          )}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography variant="body2" mr={1}>
+              Is this review helpful?
+            </Typography>
+            {isLoggedIn ? (
+              <>
+                <IconButton
+                  onClick={() => handleVote("up")}
+                  disabled={!!userVote}
+                  color="success"
+                >
+                  <ThumbUp
+                    sx={{ color: userVote === true ? "green" : "grey" }}
+                  />
+                </IconButton>
+                <IconButton
+                  onClick={() => handleVote("down")}
+                  disabled={!!userVote}
+                  color="error"
+                >
+                  <ThumbDown
+                    sx={{ color: userVote === false ? "red" : "grey" }}
+                  />
+                </IconButton>
+              </>
+            ) : (
+              <Typography>Login to rate this review</Typography>
+            )}
+          </Box>
+          <Typography
+            variant="body2"
+            sx={{
+              color: netVotes > 0 ? "green" : netVotes < 0 ? "red" : "inherit",
+            }}
+          >
+            Net Votes: {netVotes > 0 ? `+${netVotes}` : `${netVotes}`}
+          </Typography>{" "}
         </Box>
       </CardContent>
     </Card>

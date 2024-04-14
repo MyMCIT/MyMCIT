@@ -41,8 +41,13 @@ export default async function handleVote(
     .eq("review_id", reviewId)
     .single();
 
-  if (existingVoteError && !existingVoteError.message.includes("No rows")) {
-    return res.status(500).json({ error: "Failed to check existing votes" });
+  if (
+    existingVoteError &&
+    existingVoteError.message.includes(
+      "JSON object requested, multiple rows returned",
+    )
+  ) {
+    return res.status(500).json({ error: existingVoteError.message });
   }
 
   if (existingVote) {
