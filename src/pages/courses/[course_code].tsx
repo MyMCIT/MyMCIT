@@ -274,19 +274,22 @@ export default function CourseReviews({
     selectedSemesters.length > 0 || selectedSentiments.length > 0;
 
   // filter displayed reviews based on selected filters(s) in the dropdowns
-  const filteredReviews = reviews.filter(
-    (review: Review) =>
-      (selectedSemesters.length === 0 ||
-        selectedSemesters.includes(review.semester)) &&
-      (selectedSentiments.length === 0 ||
-        (selectedSentiments.includes("Positive") &&
-          (review.rating === "Liked" || review.rating === "Strongly Liked")) ||
-        (selectedSentiments.includes("Negative") &&
-          (review.rating === "Disliked" ||
-            review.rating === "Strongly Disliked")) ||
-        (selectedSentiments.includes("Neutral") &&
-          review.rating === "Neutral")),
-  );
+  const filteredReviews = reviews
+    .filter(
+      (review: Review) =>
+        (selectedSemesters.length === 0 ||
+          selectedSemesters.includes(review.semester)) &&
+        (selectedSentiments.length === 0 ||
+          (selectedSentiments.includes("Positive") &&
+            (review.rating === "Liked" ||
+              review.rating === "Strongly Liked")) ||
+          (selectedSentiments.includes("Negative") &&
+            (review.rating === "Disliked" ||
+              review.rating === "Strongly Disliked")) ||
+          (selectedSentiments.includes("Neutral") &&
+            review.rating === "Neutral")),
+    )
+    .sort((a, b) => (b.net_votes ?? 0) - (a.net_votes ?? 0)); // sort by highest reviews first
 
   // re-calculate course summary data based on the filtered reviews
   const getSummaryFromReviews = (filteredReviews: any[]) => {
