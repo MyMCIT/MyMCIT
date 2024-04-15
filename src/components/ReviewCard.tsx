@@ -235,7 +235,9 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
                 </IconButton>
               </>
             ) : (
-              <Typography>Login to rate this review</Typography>
+              <Typography variant="body2">
+                Login to rate this review.
+              </Typography>
             )}
           </Box>
           <Typography
