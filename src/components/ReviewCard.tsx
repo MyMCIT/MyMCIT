@@ -14,6 +14,7 @@ import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { track } from "@vercel/analytics";
 
 type CourseReviewSummary = {
   id: number;
@@ -97,6 +98,8 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
 
       if (response.status === 200) {
         setUserVote(voteType);
+        // capture analytics
+        track("UserVoted", { voteType: voteType ? "up" : "down" });
         const voteIncrement = voteType ? 1 : -1;
         setNetVotes((prev: number) => prev + voteIncrement);
       } else {

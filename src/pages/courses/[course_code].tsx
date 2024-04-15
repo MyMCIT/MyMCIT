@@ -26,6 +26,7 @@ import ReviewCard from "@/components/ReviewCard";
 import { SetStateAction, useEffect, useState } from "react";
 import axios from "axios";
 import AddReviewButton from "@/components/AddReviewButton";
+import { track } from "@vercel/analytics";
 
 type CourseReviewSummary = {
   id: number;
@@ -238,6 +239,8 @@ export default function CourseReviews({
     target: { value: SetStateAction<string> };
   }) => {
     setSelectedSort(event.target.value);
+    // track analytics to see which kind of sort is most popular
+    track("sort_reviews", { sort_by: event.target.value.toString() });
   };
 
   // array to hold all the semesters
