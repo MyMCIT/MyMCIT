@@ -99,7 +99,13 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
       if (response.status === 200) {
         setUserVote(voteType);
         // capture analytics
-        track("UserVoted", { voteType: voteType ? "up" : "down" });
+        track("UserVoted", {
+          voteType: voteType ? "up" : "down",
+          reviewId: review.id,
+          courseId: course.id,
+          courseCode: course.course_code,
+          courseName: course.course_name,
+        });
         const voteIncrement = voteType ? 1 : -1;
         setNetVotes((prev: number) => prev + voteIncrement);
       } else {
