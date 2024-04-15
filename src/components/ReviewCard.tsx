@@ -215,7 +215,14 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
                   color="success"
                 >
                   <ThumbUp
-                    sx={{ color: userVote === true ? "green" : "grey" }}
+                    sx={{
+                      color:
+                        userVote === true
+                          ? theme.palette.mode === "dark"
+                            ? "lightgreen"
+                            : "green"
+                          : "grey",
+                    }}
                   />
                 </IconButton>
                 <IconButton
@@ -237,8 +244,14 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
           <Typography
             variant="body2"
             sx={{
-              color: netVotes > 0 ? "green" : netVotes < 0 ? "red" : "inherit",
-              fontWeight: "bold",
+              color:
+                netVotes > 0
+                  ? theme.palette.mode === "dark"
+                    ? "lightgreen"
+                    : "green"
+                  : netVotes < 0
+                    ? "red"
+                    : "inherit",
             }}
           >
             Net Votes: {netVotes > 0 ? `+${netVotes}` : `${netVotes}`}
