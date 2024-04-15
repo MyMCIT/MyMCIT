@@ -238,6 +238,7 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
             variant="body2"
             sx={{
               color: netVotes > 0 ? "green" : netVotes < 0 ? "red" : "inherit",
+              fontWeight: "bold",
             }}
           >
             Net Votes: {netVotes > 0 ? `+${netVotes}` : `${netVotes}`}
