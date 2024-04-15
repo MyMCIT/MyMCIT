@@ -23,7 +23,6 @@ import { Course } from "@/models/course";
 import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AddReviewButton from "@/components/AddReviewButton";

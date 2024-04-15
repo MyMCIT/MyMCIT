@@ -26,12 +26,6 @@ type CourseReviewSummary = {
   [key: string]: number | string;
 };
 
-type ReviewCardProps = {
-  review: any;
-  course: any;
-  userHasVoted?: boolean; // This prop represents whether the user has voted on this review
-};
-
 // format date for each review's created_at db date
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
