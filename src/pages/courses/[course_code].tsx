@@ -23,7 +23,7 @@ import { Course } from "@/models/course";
 import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import axios from "axios";
 import AddReviewButton from "@/components/AddReviewButton";
 
@@ -192,6 +192,9 @@ export default function CourseReviews({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // state to manage order of reviews by most recent or by highest user votes
+  const [selectedSort, setSelectedSort] = useState("highestVotes");
+
   // state to manage selected semester(s) filter
   const [selectedSemesters, setSelectedSemesters] = useState<string[]>([]);
 
@@ -230,6 +233,13 @@ export default function CourseReviews({
     fetchUserVotes();
   }, [course.id]);
 
+  // handles state changes for the sort dropdown
+  const handleSortChange = (event: {
+    target: { value: SetStateAction<string> };
+  }) => {
+    setSelectedSort(event.target.value);
+  };
+
   // array to hold all the semesters
   const allSemesters: string[] = [
     ...new Set(reviews.map((review) => review.semester)),
@@ -264,6 +274,7 @@ export default function CourseReviews({
 
   // clears out all the filters if user clicks on Reset button
   const handleResetFilters = () => {
+    setSelectedSort("highestVotes");
     setSelectedSemesters([]);
     setSelectedSentiments([]);
   };
@@ -288,7 +299,16 @@ export default function CourseReviews({
           (selectedSentiments.includes("Neutral") &&
             review.rating === "Neutral")),
     )
-    .sort((a, b) => (b.net_votes ?? 0) - (a.net_votes ?? 0)); // sort by highest reviews first
+    .sort((a, b) => {
+      if (selectedSort === "highestVotes") {
+        // sorts reviews by highest net votes first
+        return (b.net_votes ?? 0) - (a.net_votes ?? 0);
+      }
+      // reverts to default sort by most recent reviews in desc oreder
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    });
 
   // re-calculate course summary data based on the filtered reviews
   const getSummaryFromReviews = (filteredReviews: any[]) => {
@@ -488,6 +508,23 @@ export default function CourseReviews({
               </Select>
             </FormControl>
           </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <FormControl fullWidth>
+              <InputLabel id="sort-select-label">Sort By</InputLabel>
+              <Select
+                labelId="sort-select-label"
+                value={selectedSort}
+                label="Sort By"
+                onChange={handleSortChange}
+              >
+                <MenuItem value="highestVotes">Highest Vote Score</MenuItem>
+                <MenuItem value="mostRecent">Most Recent</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}></Grid>
+          {/*empty grid so RESET button is*/}
+          {/*centered*/}
           <Grid
             item
             xs={12}
