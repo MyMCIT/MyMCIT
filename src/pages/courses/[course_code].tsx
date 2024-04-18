@@ -67,6 +67,28 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: false };
 };
 
+// standalone function to sort reviews to reuse for initial sort and if user filter sorts reviews by most recent
+const sortReviews = (a: Review, b: Review) => {
+  const termMap: { [key in "Spring" | "Summer" | "Fall"]: string } = {
+    Spring: "10",
+    Summer: "20",
+    Fall: "30",
+  };
+
+  const parseSemester = (semester: string) => {
+    const [term, year] = semester.split(" ");
+    return term in termMap
+      ? parseInt(year + termMap[term as "Spring" | "Summer" | "Fall"])
+      : 0;
+  };
+
+  const semesterDiff = parseSemester(b.semester) - parseSemester(a.semester);
+
+  if (semesterDiff !== 0) return semesterDiff;
+
+  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+};
+
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ course_code: string }>,
 ) => {
@@ -100,30 +122,7 @@ export const getStaticProps = async (
     let reviews: Review[] = await resReviews.data;
 
     // sort the reviews by semester and 'created_at'
-    reviews = reviews.sort((a, b) => {
-      const termMap: { [key in "Spring" | "Summer" | "Fall"]: string } = {
-        Spring: "10",
-        Summer: "20",
-        Fall: "30",
-      };
-
-      const parseSemester = (semester: string) => {
-        const [term, year] = semester.split(" ");
-        // check if term is a valid key in termMap, if not return 0
-        return term in termMap
-          ? parseInt(year + termMap[term as "Spring" | "Summer" | "Fall"])
-          : 0;
-      };
-
-      const semesterDiff =
-        parseSemester(b.semester) - parseSemester(a.semester);
-
-      if (semesterDiff !== 0) return semesterDiff;
-
-      return (
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-    });
+    reviews = reviews.sort(sortReviews);
 
     return {
       props: {
@@ -307,10 +306,8 @@ export default function CourseReviews({
         // sorts reviews by highest net votes first
         return (b.net_votes ?? 0) - (a.net_votes ?? 0);
       }
-      // reverts to default sort by most recent reviews in desc oreder
-      return (
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      // reverts to default sort by most recent reviews in desc order
+      return sortReviews(a, b);
     });
 
   // re-calculate course summary data based on the filtered reviews
