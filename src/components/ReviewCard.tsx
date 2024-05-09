@@ -7,7 +7,15 @@ import {
   IconButton,
   useTheme,
 } from "@mui/material";
-import { School, ThumbDown, ThumbUp } from "@mui/icons-material";
+import {
+  PlusOne,
+  PlusOneRounded,
+  PlusOneSharp,
+  PlusOneTwoTone,
+  School,
+  ThumbDown,
+  ThumbUp,
+} from "@mui/icons-material";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
 import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
@@ -232,15 +240,6 @@ export default function ReviewCard({ review, course, userHasVoted }: any) {
                             : "green"
                           : "grey",
                     }}
-                  />
-                </IconButton>
-                <IconButton
-                  onClick={() => handleVote("down")}
-                  disabled={userVote !== undefined}
-                  color="error"
-                >
-                  <ThumbDown
-                    sx={{ color: userVote === false ? "red" : "grey" }}
                   />
                 </IconButton>
               </>
