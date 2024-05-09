@@ -11,4 +11,7 @@ export type Review = {
   comment: string;
   course: Course;
   user_id?: string;
+  positive_votes?: number;
+  negative_votes?: number;
+  net_votes?: number;
 };
