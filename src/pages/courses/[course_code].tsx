@@ -248,7 +248,7 @@ export default function CourseReviews({
   ];
 
   // sentiment options
-  const sentimentOptions = ["Positive", "Negative", "Neutral"];
+  const sentimentOptions = ["Positive", "Neutral"];
 
   if (!reviews.length) {
     return (
