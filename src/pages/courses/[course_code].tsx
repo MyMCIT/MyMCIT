@@ -23,10 +23,10 @@ import { Course } from "@/models/course";
 import { Review } from "@/models/review";
 import { OverridableStringUnion } from "@mui/types";
 import ReviewCard from "@/components/ReviewCard";
-import { SetStateAction, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import axios from "axios";
 import AddReviewButton from "@/components/AddReviewButton";
-import { track } from "@vercel/analytics";
 
 type CourseReviewSummary = {
   id: number;
@@ -51,11 +51,6 @@ type ChipColor = OverridableStringUnion<
   ChipPropsColorOverrides
 >;
 
-let apiUrl =
-  process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_API_URL
-    : "http://127.0.0.1:3000";
-
 export const getStaticPaths: GetStaticPaths = async () => {
   const { data: courses, error } = await supabase
     .from("Courses")
@@ -67,33 +62,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: false };
 };
 
-// standalone function to sort reviews to reuse for initial sort and if user filter sorts reviews by most recent
-const sortReviews = (a: Review, b: Review) => {
-  const termMap: { [key in "Spring" | "Summer" | "Fall"]: string } = {
-    Spring: "10",
-    Summer: "20",
-    Fall: "30",
-  };
-
-  const parseSemester = (semester: string) => {
-    const [term, year] = semester.split(" ");
-    return term in termMap
-      ? parseInt(year + termMap[term as "Spring" | "Summer" | "Fall"])
-      : 0;
-  };
-
-  const semesterDiff = parseSemester(b.semester) - parseSemester(a.semester);
-
-  if (semesterDiff !== 0) return semesterDiff;
-
-  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-};
-
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ course_code: string }>,
 ) => {
   try {
     const { course_code } = context.params as { course_code: string };
+    let apiUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_API_URL
+        : "http://127.0.0.1:3000";
 
     // fetch course data
     const resCourse = await axios(
@@ -122,7 +99,30 @@ export const getStaticProps = async (
     let reviews: Review[] = await resReviews.data;
 
     // sort the reviews by semester and 'created_at'
-    reviews = reviews.sort(sortReviews);
+    reviews = reviews.sort((a, b) => {
+      const termMap: { [key in "Spring" | "Summer" | "Fall"]: string } = {
+        Spring: "10",
+        Summer: "20",
+        Fall: "30",
+      };
+
+      const parseSemester = (semester: string) => {
+        const [term, year] = semester.split(" ");
+        // check if term is a valid key in termMap, if not return 0
+        return term in termMap
+          ? parseInt(year + termMap[term as "Spring" | "Summer" | "Fall"])
+          : 0;
+      };
+
+      const semesterDiff =
+        parseSemester(b.semester) - parseSemester(a.semester);
+
+      if (semesterDiff !== 0) return semesterDiff;
+
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    });
 
     return {
       props: {
@@ -192,55 +192,11 @@ export default function CourseReviews({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // state to manage order of reviews by most recent or by highest user votes
-  const [selectedSort, setSelectedSort] = useState("highestVotes");
-
   // state to manage selected semester(s) filter
   const [selectedSemesters, setSelectedSemesters] = useState<string[]>([]);
 
   // state to manage the reviews by positive/negative sentiment
   const [selectedSentiments, setSelectedSentiments] = useState<string[]>([]);
-
-  // for storing all the reviews user has already voted on
-  const [userVotes, setUserVotes] = useState<Record<number, boolean>>({});
-
-  useEffect(() => {
-    // fetch user votes when the course is loaded and the user is authenticated
-    const fetchUserVotes = async () => {
-      try {
-        const session = await supabase.auth.getSession();
-        if (session.data?.session) {
-          const response = await fetch(`${apiUrl}/api/user-votes`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${session.data.session.access_token}`,
-            },
-            body: JSON.stringify({ courseId: course.id }),
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setUserVotes(data.userVotes);
-          } else {
-            console.error("Failed to fetch user votes");
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching user votes:", error);
-      }
-    };
-
-    fetchUserVotes();
-  }, [course.id]);
-
-  // handles state changes for the sort dropdown
-  const handleSortChange = (event: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setSelectedSort(event.target.value);
-    // track analytics to see which kind of sort is most popular
-    track("sort_reviews", { sort_by: event.target.value.toString() });
-  };
 
   // array to hold all the semesters
   const allSemesters: string[] = [
@@ -248,7 +204,7 @@ export default function CourseReviews({
   ];
 
   // sentiment options
-  const sentimentOptions = ["Positive", "Neutral"];
+  const sentimentOptions = ["Positive", "Negative", "Neutral"];
 
   if (!reviews.length) {
     return (
@@ -276,7 +232,6 @@ export default function CourseReviews({
 
   // clears out all the filters if user clicks on Reset button
   const handleResetFilters = () => {
-    setSelectedSort("highestVotes");
     setSelectedSemesters([]);
     setSelectedSentiments([]);
   };
@@ -286,29 +241,19 @@ export default function CourseReviews({
     selectedSemesters.length > 0 || selectedSentiments.length > 0;
 
   // filter displayed reviews based on selected filters(s) in the dropdowns
-  const filteredReviews = reviews
-    .filter(
-      (review: Review) =>
-        (selectedSemesters.length === 0 ||
-          selectedSemesters.includes(review.semester)) &&
-        (selectedSentiments.length === 0 ||
-          (selectedSentiments.includes("Positive") &&
-            (review.rating === "Liked" ||
-              review.rating === "Strongly Liked")) ||
-          (selectedSentiments.includes("Negative") &&
-            (review.rating === "Disliked" ||
-              review.rating === "Strongly Disliked")) ||
-          (selectedSentiments.includes("Neutral") &&
-            review.rating === "Neutral")),
-    )
-    .sort((a, b) => {
-      if (selectedSort === "highestVotes") {
-        // sorts reviews by highest net votes first
-        return (b.net_votes ?? 0) - (a.net_votes ?? 0);
-      }
-      // reverts to default sort by most recent reviews in desc order
-      return sortReviews(a, b);
-    });
+  const filteredReviews = reviews.filter(
+    (review: Review) =>
+      (selectedSemesters.length === 0 ||
+        selectedSemesters.includes(review.semester)) &&
+      (selectedSentiments.length === 0 ||
+        (selectedSentiments.includes("Positive") &&
+          (review.rating === "Liked" || review.rating === "Strongly Liked")) ||
+        (selectedSentiments.includes("Negative") &&
+          (review.rating === "Disliked" ||
+            review.rating === "Strongly Disliked")) ||
+        (selectedSentiments.includes("Neutral") &&
+          review.rating === "Neutral")),
+  );
 
   // re-calculate course summary data based on the filtered reviews
   const getSummaryFromReviews = (filteredReviews: any[]) => {
@@ -508,23 +453,6 @@ export default function CourseReviews({
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <FormControl fullWidth>
-              <InputLabel id="sort-select-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-select-label"
-                value={selectedSort}
-                label="Sort By"
-                onChange={handleSortChange}
-              >
-                <MenuItem value="highestVotes">Highest Vote Score</MenuItem>
-                <MenuItem value="mostRecent">Most Recent</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}></Grid>
-          {/*empty grid so RESET button is*/}
-          {/*centered*/}
           <Grid
             item
             xs={12}
@@ -553,12 +481,7 @@ export default function CourseReviews({
       </Box>
 
       {filteredReviews.map((review, index) => (
-        <ReviewCard
-          review={review}
-          key={review.id}
-          course={course}
-          userHasVoted={userVotes[review.id]}
-        />
+        <ReviewCard review={review} key={review.id} course={course} />
       ))}
 
       <SpeedDialTooltipOpen />
