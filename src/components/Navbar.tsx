@@ -198,10 +198,11 @@ export default function Navbar({ themeMode, setThemeMode }: any) {
         <div style={{ display: "flex", alignItems: "center" }}>
           <StyledLink href="/" passHref>
             <Image
-              src="/upenn-logo.svg"
+              src="/MOSA-Square-Logo-01.png"
               alt="UPenn Logo"
               height={36}
               width={36}
+              style={{ backgroundColor: "white" }}
             />
           </StyledLink>
           <StyledLink
