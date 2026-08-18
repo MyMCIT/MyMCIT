@@ -42,7 +42,7 @@ export default function SpeedDialTooltipOpen() {
         provider: "google",
         options: {
           queryParams: {
-            hd: "seas.upenn.edu",
+            hd: "engineering.upenn.edu",
           },
           redirectTo: `${baseUrl}/reviews/create-review`,
         },
@@ -62,7 +62,7 @@ export default function SpeedDialTooltipOpen() {
       }
     } else if (actionName === "Contact Us") {
       track("Contact-Us-Clicked");
-      window.location.href = "mailto:lwinm@seas.upenn.edu";
+      window.location.href = "mailto:mcitosa@engineering.upenn.edu";
     }
   };
 
