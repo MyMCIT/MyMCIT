@@ -61,8 +61,8 @@ function UserComponent({
       async (event: string, session: Session | null) => {
         let user = session?.user ?? null;
 
-        // if the user is not null and the email does not end with seas.upenn.edu, don't let the user sign in
-        if (user && !user.email?.endsWith("@seas.upenn.edu")) {
+        // if the user is not null and the email does not end with engineering.upenn.edu, don't let the user sign in
+        if (user && !user.email?.endsWith("@engineering.upenn.edu")) {
           track("Non-SEAS-User-Login-Attempt"); // log the event for analytics
           await supabase.auth.signOut(); // sign out the user
           user = null; // set the user to null
