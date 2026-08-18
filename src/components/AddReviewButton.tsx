@@ -24,7 +24,7 @@ export default function AddReviewButton() {
           provider: "google",
           options: {
             queryParams: {
-              hd: "seas.upenn.edu",
+              hd: "engineering.upenn.edu",
             },
             redirectTo: `${baseUrl}/reviews/create-review`,
           },
