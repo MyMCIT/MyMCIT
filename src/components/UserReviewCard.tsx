@@ -138,7 +138,12 @@ export default function UserReviewCard({
             </MenuItem>
           </Menu>
         </Box>
-        <Typography variant="body1" color="text.primary" gutterBottom>
+        <Typography
+          variant="body1"
+          color="text.primary"
+          gutterBottom
+          sx={{ whiteSpace: "pre-wrap" }}
+        >
           {review.comment}
         </Typography>
         <Box
