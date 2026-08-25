@@ -57,7 +57,7 @@ export default function ReviewCard({ review, course }: any) {
           variant="body1"
           color="text.primary"
           gutterBottom
-          sx={{ wordWrap: "break-word" }}
+          sx={{ wordWrap: "break-word", whiteSpace: "pre-wrap" }}
         >
           {review.comment}
         </Typography>
