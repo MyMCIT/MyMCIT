@@ -39,11 +39,15 @@ export default function MyReviews() {
             ? process.env.NEXT_PUBLIC_API_URL
             : "http://127.0.0.1:3000";
 
-        const response = await axios(`${apiUrl}/api/user-reviews`, {
-          headers: {
-            Authorization: `Bearer ${session.session.access_token}`,
-          },
-        })
+        const response = await axios.get(`${apiUrl}/api/user-reviews`, {
+         headers: {
+           Authorization: `Bearer ${session.session.access_token}`,
+           "Cache-Control": "no-cache",
+         },
+         params: {
+           _: Date.now(),
+         },
+        });
 
         if (response.status !== 200) {
           console.error("Failed to fetch reviews");
