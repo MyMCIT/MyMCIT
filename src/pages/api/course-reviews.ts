@@ -1,4 +1,4 @@
-'use client'
+//'use client'
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabase";
@@ -17,7 +17,8 @@ export default async function handler(
       .order("legacy_date", { ascending: false });
 
     if (error) throw error; // If there's any supabase error, throw it.
-
+  
+    res.setHeader("Cache-Control", "no-store");  
     res.status(200).json(reviews);
   } catch (error) {
     console.error(error);
