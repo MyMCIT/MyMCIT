@@ -59,7 +59,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const paths = courses.map((course: { course_code: string }) => ({
     params: { course_code: course.course_code },
   }));
-  return { paths, fallback: "blocking" };
+  return { paths, fallback: false };
 };
 
 export const getStaticProps = async (
@@ -130,7 +130,7 @@ export const getStaticProps = async (
         courseSummary,
         reviews,
       },
-      revalidate: 60,
+      revalidate: 86400,
     };
   } catch (error) {
     if (error instanceof Error) {
