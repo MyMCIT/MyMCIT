@@ -458,7 +458,7 @@ COPY "public"."Courses" ("id", "created_at", "course_name", "course_code") FROM 
 7	2024-01-24 22:42:23.858025+00	Computer & Network Security	CIS-5510
 8	2024-01-24 22:42:35.263377+00	Networked Systems	CIS-5530
 9	2024-01-24 22:42:46.000325+00	Internet and Web Systems	CIS-5550
-10	2024-01-24 22:43:04.71616+00	Computer Vision & Computational Photography	CIS-5810
+10	2024-01-24 22:43:04.716160+00	Computer Vision & Computational Photography	CIS-5810
 11	2024-01-24 22:43:14.478793+00	Intro to Robotics	CIT-5200
 12	2024-01-24 22:43:25.020378+00	Blockchain & Cryptography	CIT-5820
 13	2024-01-24 22:43:36.158352+00	Introduction to Software Development	CIT-5910
@@ -467,15 +467,36 @@ COPY "public"."Courses" ("id", "created_at", "course_name", "course_code") FROM 
 16	2024-01-24 22:44:14.641401+00	Computer Systems Programming	CIT-5950
 17	2024-01-24 22:44:25.677822+00	Algorithms & Computation	CIT-5960
 18	2024-01-24 22:44:36.284571+00	Machine Learning for Data Science	ESE-5410
-19	2024-01-24 22:44:52.689269+00	Statistics for Data Science: An Applied Machine Learning Course	ESE-5420
+19	2024-01-24 22:44:52.689269+00	Statistics for Data Science	ESE-5420
 20	2024-01-24 23:00:35.720679+00	Introduction to Computer Systems	CIT-5930
 21	2024-01-28 23:54:33.162849+00	Natural Language Processing	CIS-5300
-23	2024-01-28 23:55:01.977673+00	How to Use Data	EAS-5740
 22	2024-01-28 23:54:47.081903+00	Cloud Technologies Practicum	DATS-5750
+23	2024-01-28 23:55:01.977673+00	How to Use Data	EAS-5740
 24	2024-01-28 23:55:35.180137+00	Blockchains	EAS-5830
 25	2024-01-28 23:55:47.250774+00	Imaging Informatics	EAS-5850
 26	2024-01-28 23:55:59.072082+00	Medical Image Analysis	EAS-5860
 27	2024-01-28 23:56:10.009928+00	Principles of Deep Learning	ESE-5460
+28	2024-12-22 17:26:38+00	GPU Computing for Machine Learning Systems	CIS-5690
+29	2024-12-22 17:28:12+00	Mathematical Foundations for Machine Learning I: Probability (0.5 CU)	EAS-5160
+30	2024-12-22 17:29:12+00	Technology Ethics and the Legal Landscape	EAS-5240
+31	2026-08-18 17:59:38+00	Intellectual Property Strategy and Business Law for Engineers	EAS-5070
+32	2026-08-18 18:07:56+00	Mathematical Foundations for Machine Learning II: Linear Algebra	EAS-5170
+33	2026-08-18 18:10:14+00	Generative AI for Virtual Environments	EAS-5870
+34	2026-08-18 18:12:16+00	Digital Health	HCIN-6022
+35	2026-08-18 18:15:16+00	Artificial Intelligence Capstone	CIS-5980
+36	2026-08-18 18:17:26+00	Cryptography	CIS-5560
+37	2026-08-18 18:18:24+00	Secure System Engineering and Management	CIS-5580
+38	2026-08-18 18:19:31+00	Data Science Capstone	DATS-5980
+39	2026-08-18 18:21:00+00	Technology Innovation and Entrepreneurship	EAS-5440
+40	2026-08-18 18:23:32+00	Design Thinking for Engineering Innovation	EAS-5720
+41	2026-08-18 18:24:20+00	Engineering Economics	ENGR-5400
+42	2026-08-18 18:24:20+00	Algorithms for Big Data	CIS-5030
+43	2026-08-19 06:20:00+00	Software Systems (In Development)	CIS-5050
+44	2026-08-19 06:34:10+00	Connected Health Care	HCIN-6012
+45	2026-08-19 06:34:43+00	Leading Change in Health Care	HCIN-6170
+46	2026-08-19 06:35:09+00	Translating Ideas into Outcomes	HCIN-6070
+47	2026-08-19 06:35:39+00	Behavioral Economics and Decision Making	HCIN-6020
+48	2026-08-19 06:36:09+00	Advancing Health Equity	HCIN-6160
 \.
 
 
@@ -1163,7 +1184,7 @@ SELECT pg_catalog.setval('"public"."Course_Professors_id_seq"', 1, false);
 -- Name: Courses_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"public"."Courses_id_seq"', 27, true);
+SELECT pg_catalog.setval('"public"."Courses_id_seq"', 48, true);
 
 
 --
