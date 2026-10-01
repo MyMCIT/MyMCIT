@@ -5,24 +5,21 @@ import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
 import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
 import ClassOutlinedIcon from "@mui/icons-material/ClassOutlined";
 
-type CourseReviewSummary = {
-  id: number;
-  course_name: string;
-  course_code: string;
-  totalReviews: number;
-  averageDifficulty: number;
-  averageWorkload: number;
-  averageRating: number;
-  [key: string]: number | string;
-};
+import { Course } from "@/models/course";
+import { Review } from "@/models/review";
 
-// format date for each review's created_at db date
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 };
 
-export default function ReviewCard({ review, course }: any) {
+export default function ReviewCard({
+  review,
+  course,
+}: {
+  review: Review;
+  course: Course;
+}) {
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
 
@@ -38,9 +35,9 @@ export default function ReviewCard({ review, course }: any) {
       }}
     >
       <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <School sx={{ fontSize: 40, mr: 2 }} />
-          <Box flexGrow={1}>
+          <Box sx={{ flexGrow: 1 }}>
             <Typography
               variant="body1"
               component="div"
@@ -61,8 +58,8 @@ export default function ReviewCard({ review, course }: any) {
         >
           {review.comment}
         </Typography>
-        <Box display="flex" flexWrap="wrap" justifyContent="right" mt={2}>
-          <Box display="flex" flexWrap="wrap" gap={1}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "right", mt: 2 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
             <Chip
               icon={<ClassOutlinedIcon />}
               label={review.semester}

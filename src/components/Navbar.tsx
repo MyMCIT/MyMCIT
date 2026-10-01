@@ -1,25 +1,24 @@
 "use client";
 import {
   AppBar,
+  Box,
   Toolbar,
   Typography,
   IconButton,
   Button,
   MenuItem,
   Menu,
-  useMediaQuery,
-  useTheme,
-  Hidden,
   Snackbar,
+  PaletteMode,
 } from "@mui/material";
 import { AccountCircle, Brightness3, Brightness7 } from "@mui/icons-material";
 import { User, Session } from "@supabase/supabase-js";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Link from "next/link";
-import { styled } from "@mui/system";
+import { styled } from "@mui/material/styles";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { track } from "@vercel/analytics";
 import AddReviewButton from "@/components/AddReviewButton";
 
@@ -96,37 +95,36 @@ function UserComponent({
           open={menuOpen}
           onClose={handleClose}
           onClick={handleClose}
-          PaperProps={{
-            elevation: 0,
-            sx: {
-              overflow: "visible",
-              filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-              mt: 1.5,
-              "& .MuiAvatar-root": {
-                width: 32,
-                height: 32,
-                ml: -0.5,
-                mr: 1,
+          slotProps={{
+            paper: {
+              elevation: 0,
+              sx: {
+                overflow: "visible",
+                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                mt: 1.5,
+                "& .MuiAvatar-root": {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
+                },
+                "&:before": {
+                  content: '""',
+                  display: "block",
+                  position: "absolute",
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: "background.paper",
+                  transform: "rotate(45deg)",
+                  zIndex: 0,
+                },
               },
-              "&:before": {
-                content: '""',
-                display: "block",
-                position: "absolute",
-                top: 0,
-                right: 14,
-                width: 10,
-                height: 10,
-                bgcolor: "background.paper",
-                transform: "rotate(45deg)",
-                zIndex: 0,
-              },
-            },
-            transformOrigin: "top right",
-            anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "right",
             },
           }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         >
           <MenuItem
             onClick={() => {
@@ -176,9 +174,13 @@ function UserComponent({
   );
 }
 
-export default function Navbar({ themeMode, setThemeMode }: any) {
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+export default function Navbar({
+  themeMode,
+  setThemeMode,
+}: {
+  themeMode: PaletteMode;
+  setThemeMode: Dispatch<SetStateAction<PaletteMode>>;
+}) {
   const [emailError, setEmailError] = useState(false);
 
   function handleThemeChange() {
@@ -214,28 +216,29 @@ export default function Navbar({ themeMode, setThemeMode }: any) {
               MyMCIT
             </Typography>
           </StyledLink>
-          <Hidden smDown>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <StyledLink
-                href="/"
-                passHref
-                onClick={() => track("Courses-Navbar-Click")}
-              >
-                <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-                  Courses
-                </Typography>
-              </StyledLink>
-              <StyledLink
-                href="/reviews"
-                passHref
-                onClick={() => track("Reviews-Navbar-Click")}
-              >
-                <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
-                  Reviews
-                </Typography>
-              </StyledLink>
-            </div>
-          </Hidden>
+          <Box
+            sx={{
+              display: { xs: "none", sm: "flex" },
+              alignItems: "center",
+            }}
+          >
+            <StyledLink
+              href="/"
+              onClick={() => track("Courses-Navbar-Click")}
+            >
+              <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
+                Courses
+              </Typography>
+            </StyledLink>
+            <StyledLink
+              href="/reviews"
+              onClick={() => track("Reviews-Navbar-Click")}
+            >
+              <Typography variant="subtitle1" component="div" sx={{ ml: 2 }}>
+                Reviews
+              </Typography>
+            </StyledLink>
+          </Box>
         </div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <div style={{ marginRight: 10 }}>

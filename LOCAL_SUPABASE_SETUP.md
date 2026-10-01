@@ -6,7 +6,7 @@ Running into any issues? Refer to the [Troubleshooting](#troubleshooting) sectio
 
 ## Prerequisites
 
-- Install the Supabase CLI. For macOS, use `brew install supabase/tap/supabase`. See the [Supabase CLI documentation](https://supabase.com/docs/guides/cli/getting-started) for installation instructions on other operating systems.
+- Install the Supabase CLI. For macOS, use `brew install supabase`. See the [Supabase CLI documentation](https://supabase.com/docs/guides/cli/getting-started) for installation instructions on other operating systems.
 - Install Docker from [Docker's official website](https://docs.docker.com/get-docker/) if it's not already installed on your machine.
 - Install PostgreSQL. For macOS, use `brew install postgresql`. See the [PostgreSQL documentation](https://www.postgresql.org/download/) for installation instructions on other operating systems.
 
@@ -42,7 +42,7 @@ To set up authentication with Google OAuth, follow these steps:
     redirect_uri = "http://localhost:54321/auth/v1/callback"
     ```
 
-3. Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to your local `.env` file. These values can be obtained from the Google Cloud console. You can ask the MOSA team to provide you with the values. If the MOSA team cannot provide values to you due to MOSA procedures, don't worry: follow these instructions to set up your own Google OAuth setup for local testing: [Google Cloud OAuth Setup](https://support.google.com/cloud/answer/6158849?hl=en#zippy=%2Cpublic-and-internal-applications%2Cstep-configure-your-app-to-use-the-new-secret%2Cstep-create-a-new-client-secret).
+3. Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to your local `.env.local` file. These values can be obtained from the Google Cloud console. You can ask the MOSA team to provide you with the values. If the MOSA team cannot provide values to you due to MOSA procedures, don't worry: follow these instructions to set up your own Google OAuth setup for local testing: [Google Cloud OAuth Setup](https://support.google.com/cloud/answer/6158849?hl=en#zippy=%2Cpublic-and-internal-applications%2Cstep-configure-your-app-to-use-the-new-secret%2Cstep-create-a-new-client-secret).
 
 4. Update your `config.toml` file, including the following URLs in the `additional_redirect_urls` field to permit post-authentication redirects:
 
@@ -56,7 +56,7 @@ This configuration allows you to use Google OAuth locally with Supabase's built-
 
 ## .env Local File Setup
 
-Here is an example of what your `.env` file should contain for local development. 
+Here is an example of what your `.env.local` file should contain for local development. 
 
 ```plaintext
 NEXT_PUBLIC_SUPABASE_LOCAL_URL=http://127.0.0.1:54321

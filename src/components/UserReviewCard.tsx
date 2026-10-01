@@ -15,17 +15,8 @@ import React, { useEffect, useState } from "react";
 import { isCurrentUserReview } from "@/lib/userUtils";
 import { getDifficultyColor, getRatingColor } from "@/lib/reviewColorUtils";
 import { getDifficultyIcon, getRatingIcon } from "@/lib/reviewIconUtils";
-
-type CourseReviewSummary = {
-  id: number;
-  course_name: string;
-  course_code: string;
-  totalReviews: number;
-  averageDifficulty: number;
-  averageWorkload: number;
-  averageRating: number;
-  [key: string]: number | string;
-};
+import { Course } from "@/models/course";
+import { Review } from "@/models/review";
 
 // format date for each review's created_at db date
 const formatDate = (dateString: string) => {
@@ -38,7 +29,12 @@ export default function UserReviewCard({
   course,
   onEdit,
   onDelete,
-}: any) {
+}: {
+  review: Review;
+  course: Course;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   const difficultyColor = getDifficultyColor(review.difficulty);
   const ratingColor = getRatingColor(review.rating);
   const [canEditDelete, setCanEditDelete] = useState(false);
@@ -79,12 +75,14 @@ export default function UserReviewCard({
     >
       <CardContent>
         <Box
-          display="flex"
-          alignItems="center"
-          mb={2}
-          justifyContent="space-between"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            mb: 2,
+            justifyContent: "space-between",
+          }}
         >
-          <Box display="flex" alignItems="center">
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <School sx={{ fontSize: 40, mr: 2 }} />
             <Box>
               <Typography
@@ -100,43 +98,47 @@ export default function UserReviewCard({
             </Box>
           </Box>
 
-          <IconButton
-            aria-label="more"
-            aria-controls="long-menu"
-            aria-haspopup="true"
-            onClick={handleClick}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-            }}
-          >
-            <MoreVert />
-          </IconButton>
-          <Menu
-            id="long-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={open}
-            onClose={handleClose}
-          >
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                onEdit();
-              }}
-            >
-              Edit
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                onDelete();
-              }}
-            >
-              Delete
-            </MenuItem>
-          </Menu>
+          {canEditDelete ? (
+            <>
+              <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+                sx={{
+                  position: "absolute",
+                  right: 8,
+                  top: 8,
+                }}
+              >
+                <MoreVert />
+              </IconButton>
+              <Menu
+                id="long-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={open}
+                onClose={handleClose}
+              >
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                    onEdit();
+                  }}
+                >
+                  Edit
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                    onDelete();
+                  }}
+                >
+                  Delete
+                </MenuItem>
+              </Menu>
+            </>
+          ) : null}
         </Box>
         <Typography
           variant="body1"
@@ -147,12 +149,14 @@ export default function UserReviewCard({
           {review.comment}
         </Typography>
         <Box
-          display="flex"
-          justifyContent="space-between"
-          flexWrap="wrap"
-          mt={2}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            mt: 2,
+          }}
         >
-          <Box flexGrow={1} display="flex" justifyContent="flex-end">
+          <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "flex-end" }}>
             <Chip
               icon={<ClassOutlinedIcon />}
               label={review.semester}

@@ -34,7 +34,7 @@ In the context of MyMCIT, a web application for students to read and write revie
 
 ### Prerequisites
 
-- Node.js (version 18.17 or later) installed (LTS version recommended), preferably with `nvm` the [Node Version Manager](https://github.com/nvm-sh/nvm). The initial version was built with `LTS/hydrogen` (`v18`).
+- Node.js (version 20.9 or later) installed (LTS version recommended), preferably with `nvm` the [Node Version Manager](https://github.com/nvm-sh/nvm). Next.js 16 requires Node `20.9.0` or newer. Use `nvm use` with the version in `.nvmrc` (`v20.20.2`).
 - Login credentials to the Supabase account with the project DB.
 - Google Cloud Platform account for setting up OAuth.
 
@@ -56,7 +56,7 @@ In the context of MyMCIT, a web application for students to read and write revie
     ```
 
 3. **Set up environment variables**:
-    - Copy the `.env.template` file to `.env`.
+    - Copy the `.env.template` file to `.env.local`.
     - Fill in the environment variables with the MyMCIT Supabase and Google OAuth credentials.
 
 4. **Run the development server**:

@@ -1,3 +1,5 @@
+import { cacheLife } from "next/cache";
+
 export function getSemesters() {
   const startYear = 2019;
   const currentDate = new Date();
@@ -24,4 +26,34 @@ export function getSemesters() {
   }
 
   return semesters;
+}
+
+export function getRecentSemesters() {
+  const currentYear = new Date().getFullYear();
+  const validYears = [currentYear, currentYear - 1, currentYear - 2];
+  return getSemesters()
+    .filter((item) => validYears.includes(parseInt(item.split(" ")[1], 10)))
+    .sort((a, b) => {
+      const partsA = a.split(" ");
+      const partsB = b.split(" ");
+      const yearDifference = parseInt(partsB[1], 10) - parseInt(partsA[1], 10);
+      if (yearDifference !== 0) return yearDifference;
+      const order = { Spring: 1, Summer: 2, Fall: 3 };
+      return (
+        (order[partsB[0] as keyof typeof order] || 0) -
+        (order[partsA[0] as keyof typeof order] || 0)
+      );
+    });
+}
+
+export async function getCachedSemesters() {
+  "use cache";
+  cacheLife({ revalidate: 86400 });
+  return getSemesters();
+}
+
+export async function getCachedRecentSemesters() {
+  "use cache";
+  cacheLife({ revalidate: 86400 });
+  return getRecentSemesters();
 }
