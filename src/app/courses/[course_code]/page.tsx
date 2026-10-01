@@ -14,25 +14,46 @@ export async function generateStaticParams() {
   return courseCodes.map((course_code) => ({ course_code }));
 }
 
+function decodeCourseCode(courseCode: string) {
+  try {
+    return decodeURIComponent(courseCode);
+  } catch {
+    return courseCode;
+  }
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ course_code: string }>;
 }) {
   const { course_code } = await params;
-  const course = await getCourseByCode(course_code);
+  const course = await getCourseByCode(decodeCourseCode(course_code));
   if (!course) {
     return { title: "Course not found" };
   }
   return { title: `${course.course_code}: ${course.course_name}` };
 }
 
-export default async function CoursePage({
+export default function CoursePage({
   params,
 }: {
   params: Promise<{ course_code: string }>;
 }) {
-  const { course_code } = await params;
+  return (
+    <Suspense fallback={<div>Loading course...</div>}>
+      <CoursePageContent params={params} />
+    </Suspense>
+  );
+}
+
+async function CoursePageContent({
+  params,
+}: {
+  params: Promise<{ course_code: string }>;
+}) {
+  const { course_code: rawCourseCode } = await params;
+  const course_code = decodeCourseCode(rawCourseCode);
   const course = await getCourseByCode(course_code);
   if (!course) {
     notFound();
@@ -44,12 +65,10 @@ export default async function CoursePage({
   ]);
 
   return (
-    <Suspense fallback={<div>Loading course...</div>}>
-      <CourseDetail
-        course={course}
-        courseSummary={courseSummary}
-        reviews={sortReviews(reviews)}
-      />
-    </Suspense>
+    <CourseDetail
+      course={course}
+      courseSummary={courseSummary}
+      reviews={sortReviews(reviews)}
+    />
   );
 }

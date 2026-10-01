@@ -19,6 +19,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { courseCodesMatch } from "@/lib/course-code";
 import { Course } from "@/models/course";
 import { supabase } from "@/lib/supabase";
 import { track } from "@vercel/analytics";
@@ -167,8 +168,8 @@ export default function CreateReviewForm({
               required
               value={courseName}
               onChange={(e) => {
-                const selectedCourse = courses.find(
-                  (item) => item.course_code === e.target.value,
+                const selectedCourse = courses.find((item) =>
+                  courseCodesMatch(item.course_code, e.target.value),
                 );
                 if (!selectedCourse) return;
                 setCourse(selectedCourse);

@@ -23,7 +23,7 @@ Running into any issues? Refer to the [Troubleshooting](#troubleshooting) sectio
     psql -h localhost -p 54322 -U postgres -d postgres -f data.sql
     ```
 
-5. Once done, your local Docker Supabase database will be populated with the schema, roles, and data. Run `npm run dev` to start your project.
+5. Once done, your local Docker Supabase database will be populated with the schema, roles, and data. `data.sql` seeds the same 48-course catalog as production ([mymcit.org](https://mymcit.org/)), including newer courses such as CIS-5030. Run `npm run dev` to start your project.
 
 **Note:** This setup creates an isolated local database. Users without Supabase production environment variables will not interact with the production database.
 

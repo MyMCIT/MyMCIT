@@ -17,6 +17,7 @@ import SpeedDialTooltipOpen from "@/components/SpeedDial";
 import { Course } from "@/models/course";
 import { Review } from "@/models/review";
 import { CourseReviewSummary } from "@/models/course-review-summary";
+import { courseCodesMatch } from "@/lib/course-code";
 import ReviewCard from "@/components/ReviewCard";
 import { useState } from "react";
 import AddReviewButton from "@/components/AddReviewButton";
@@ -53,14 +54,6 @@ export default function CourseDetail({
     ...new Set(reviews.map((review) => review.semester)),
   ];
   const sentimentOptions = ["Positive", "Negative", "Neutral"];
-
-  if (!reviews.length) {
-    return (
-      <Typography variant="h6" sx={{ textAlign: "center", mt: 5 }}>
-        No reviews are available for this course.
-      </Typography>
-    );
-  }
 
   const handleSemesterChange = (event: { target: { value: unknown } }) => {
     const value = event.target.value;
@@ -120,16 +113,16 @@ export default function CourseDetail({
 
   const summary =
     courseSummary.find(
-      (item) => item.course_code === course.course_code,
+      (item) => courseCodesMatch(item.course_code, course.course_code),
     ) || null;
 
   const currentSummary = isFilterApplied
     ? getSummaryFromReviews(filteredReviews)
     : {
-        totalReviews: summary?.totalReviews,
-        averageDifficulty: summary?.averageDifficulty.toFixed(2),
-        averageWorkload: summary?.averageWorkload.toFixed(2),
-        averageRating: summary?.averageRating.toFixed(2),
+        totalReviews: summary?.totalReviews ?? 0,
+        averageDifficulty: (summary?.averageDifficulty ?? 0).toFixed(2),
+        averageWorkload: (summary?.averageWorkload ?? 0).toFixed(2),
+        averageRating: (summary?.averageRating ?? 0).toFixed(2),
       };
 
   return (
@@ -273,9 +266,15 @@ export default function CourseDetail({
         </Box>
       </Box>
 
-      {filteredReviews.map((review) => (
-        <ReviewCard review={review} key={review.id} course={course} />
-      ))}
+      {filteredReviews.length > 0 ? (
+        filteredReviews.map((review) => (
+          <ReviewCard review={review} key={review.id} course={course} />
+        ))
+      ) : (
+        <Typography variant="h6" sx={{ textAlign: "center", mt: 5 }}>
+          No reviews are available for this course.
+        </Typography>
+      )}
 
       <SpeedDialTooltipOpen />
     </>

@@ -19,6 +19,7 @@ import {
 import SpeedDialTooltipOpen from "@/components/SpeedDial";
 import { useState } from "react";
 import { CourseReviewSummary } from "@/models/course-review-summary";
+import { courseCodesMatch } from "@/lib/course-code";
 import { track } from "@vercel/analytics";
 
 export default function HomeCourseGrid({
@@ -60,10 +61,14 @@ export default function HomeCourseGrid({
   });
 
   if (!filters.coreCourses) {
-    rows = rows.filter((row) => !coreCourses.includes(row.course_code));
+    rows = rows.filter(
+      (row) => !coreCourses.some((code) => courseCodesMatch(code, row.course_code)),
+    );
   }
   if (!filters.electives) {
-    rows = rows.filter((row) => coreCourses.includes(row.course_code));
+    rows = rows.filter((row) =>
+      coreCourses.some((code) => courseCodesMatch(code, row.course_code)),
+    );
   }
   if (filters.noReviews) {
     rows = rows.filter((row) => row.totalReviews == 0);

@@ -1,5 +1,8 @@
+import "server-only";
+
 import { cacheLife, cacheTag } from "next/cache";
 import { supabase } from "@/lib/supabase";
+import { escapeIlikePattern } from "@/lib/course-code";
 import type { Course } from "@/models/course";
 import type { Review } from "@/models/review";
 import type { CourseReviewSummary } from "@/models/course-review-summary";
@@ -36,13 +39,14 @@ export async function getCourseByCode(
   courseCode: string,
 ): Promise<Course | null> {
   "use cache";
+  const normalized = courseCode.trim();
   cacheLife({ revalidate: 86400 });
-  cacheTag("courses", `course-${courseCode}`);
+  cacheTag("courses", `course-${normalized.toLowerCase()}`);
 
   const { data, error } = await supabase
     .from("Courses")
     .select("*")
-    .eq("course_code", courseCode);
+    .ilike("course_code", escapeIlikePattern(normalized));
 
   if (error) {
     throw error;
