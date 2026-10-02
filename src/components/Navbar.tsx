@@ -62,11 +62,11 @@ function UserComponent({
 
         // if the user is not null and the email does not end with engineering.upenn.edu, don't let the user sign in
         if (user && !user.email?.endsWith("@engineering.upenn.edu")) {
-          track("Non-SEAS-User-Login-Attempt"); // log the event for analytics
+          track("Non-engineering-User-Login-Attempt"); // log the event for analytics
           await supabase.auth.signOut(); // sign out the user
           user = null; // set the user to null
           router.push("/"); // kick the user to '/' route
-          // display a toast to the user that they need to use their SEAS email
+          // display a toast to the user that they need to use their Engineering email
           setEmailError(true);
         }
 
@@ -160,7 +160,7 @@ function UserComponent({
             provider: "google",
             options: {
               queryParams: {
-                hd: "seas.upenn.edu", // only allow UPenn SEAS emails
+                hd: "engineering.upenn.edu", // only allow UPenn Engineering emails
               },
               redirectTo: `${baseUrl}`, // redirect to route after OAuth complete
             },
@@ -254,7 +254,7 @@ export default function Navbar({
         open={emailError}
         autoHideDuration={6000}
         onClose={() => setEmailError(false)}
-        message="Login failed. Please use your SEAS Penn email."
+        message="Login failed. Please use your Engineering Penn email."
       />
     </AppBar>
   );
