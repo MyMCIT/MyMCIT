@@ -24,9 +24,9 @@ const ratingMap = {
 };
 
 export async function getCourses(): Promise<Course[]> {
-  "use cache";
-  cacheLife({ revalidate: 86400 });
-  cacheTag("courses");
+  //"use cache";
+  //cacheLife({ revalidate: 86400 });
+  //cacheTag("courses");
 
   const { data, error } = await supabase.from("Courses").select("*");
   if (error) {
@@ -38,10 +38,10 @@ export async function getCourses(): Promise<Course[]> {
 export async function getCourseByCode(
   courseCode: string,
 ): Promise<Course | null> {
-  "use cache";
+  //"use cache";
   const normalized = courseCode.trim();
-  cacheLife({ revalidate: 86400 });
-  cacheTag("courses", `course-${normalized.toLowerCase()}`);
+  //cacheLife({ revalidate: 86400 });
+  //cacheTag("courses", `course-${normalized.toLowerCase()}`);
 
   const { data, error } = await supabase
     .from("Courses")
@@ -55,9 +55,9 @@ export async function getCourseByCode(
 }
 
 export async function getCourseCodes(): Promise<string[]> {
-  "use cache";
-  cacheLife({ revalidate: 86400 });
-  cacheTag("courses");
+  //"use cache";
+  //cacheLife({ revalidate: 86400 });
+ // cacheTag("courses");
 
   const { data, error } = await supabase.from("Courses").select("course_code");
   if (error) {
@@ -67,12 +67,12 @@ export async function getCourseCodes(): Promise<string[]> {
 }
 
 export async function getReviews(courseId?: number): Promise<Review[]> {
-  "use cache";
-  cacheLife({ revalidate: 86400 });
-  cacheTag(
-    "reviews",
-    courseId != null ? `reviews-course-${courseId}` : "reviews-all",
-  );
+ // "use cache";
+ // cacheLife({ revalidate: 86400 });
+ // cacheTag(
+  //  "reviews",
+  //  courseId != null ? `reviews-course-${courseId}` : "reviews-all",
+//  );
 
   let query = supabase.from("Reviews").select("*");
   if (courseId != null) {
@@ -87,9 +87,9 @@ export async function getReviews(courseId?: number): Promise<Review[]> {
 }
 
 export async function getCourseSummaries(): Promise<CourseReviewSummary[]> {
-  "use cache";
-  cacheLife({ revalidate: 86400 });
-  cacheTag("course-summaries");
+ // "use cache";
+ // cacheLife({ revalidate: 86400 });
+//  cacheTag("course-summaries");
 
   const [courses, reviews] = await Promise.all([getCourses(), getReviews()]);
 
@@ -130,9 +130,9 @@ export async function getCourseSummaries(): Promise<CourseReviewSummary[]> {
 }
 
 export async function getReviewsWithCourses(): Promise<Review[]> {
-  "use cache";
-  cacheLife({ revalidate: 86400 });
-  cacheTag("reviews", "courses");
+ // "use cache";
+ // cacheLife({ revalidate: 86400 });
+//  cacheTag("reviews", "courses");
 
   const [reviews, courses] = await Promise.all([getReviews(), getCourses()]);
   const courseMap = courses.reduce(
